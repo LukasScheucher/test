@@ -11,6 +11,7 @@ display(['Case ' num2str(p.Case) ': ' p.description]);
 % length = Params(CaseNr).p.elHeight*Params(CaseNr).p.Nelx*Params(CaseNr).p.Nsx;
 % height = Params(CaseNr).p.elHeight*Params(CaseNr).p.Nely*Params(CaseNr).p.Nsy;
 % display(['length=' num2str(length) ' m;   height=' num2str(height) ' m']);
+% toller neuer kommentar
 
 [p] = FETIsetup(p);
 
