@@ -148,7 +148,7 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
 p.globalassembly=1;
-%p.sizes = [1, 1, 1, 1;
+%p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
 %p.sizes = [3,1,2;
@@ -162,7 +162,7 @@ p.Length = 3; % cantilever length in meters
 %p.sizes = [3, 3;
 %    1, 0.5];
 %p.elcount = [2, 1];
-p.sizes = [4/3, 1, 2/3, 2, 1;
+p.sizes = [4/3, 1, 2/3, 2, 1; % B-Matrix_assembliert.xlsx
             1, 1, 1, 0.5, 0.5];
 p.elcount = [3, 1, 3, 1, 2];
 %p.sizes = [1, 2, 2;
@@ -195,7 +195,7 @@ p.Nsx = 1; % number of substructures in x direction
 % number counting in x direction
 %
 
-p.SteelRowNrsOddNsx = [1 2 3 4 5 6];
+p.SteelRowNrsOddNsx = [];
 p.SteelRowNrsEvenNsx = [];
 
 % if ChangeForEvenNsy is set true/1, the material setting for Odd/Even is
@@ -208,7 +208,7 @@ p.ChangeForEvenNsy = 0;
 %% loading
 p.Loadcase = 1;
 %p.Loadcase = 1;
-p.bendforce = 5000;
+p.bendforce = 100;
 p.axforce = 500;
 p.axforcefield_max = 1500;
 p.axforcefield_offset = -2000;

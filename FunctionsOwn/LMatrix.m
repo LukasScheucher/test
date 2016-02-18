@@ -110,28 +110,28 @@ g_dof=1;
 disp('masterdofs_subs:')
 disp(masterdofs_subs)
 disp(size(masterdofs_subs))
-masterdofs=masterdofs_subs(1,1:size(p.L_man,2)-size(zerocol,2));
+masterdofs=masterdofs_subs;%(1,1:size(p.L_man,2)-size(zerocol,2));
 
 %masterdofs=[73    74    77    78    79    80    83    84    85    86    87    88    89    90   151   152   153   154   155   156   169   170   173   174];
 slavedofs=[1:size(B2_help,2)];
 slavedofs([masterdofs,zerocol])=[]; 
-m=1;
-mdof_free=[size(p.L_man,2)-size(zerocol,2)+1:size(masterdofs_subs,2)];
-disp('mdof_free:')
-disp(mdof_free)
-disp('masterdofs')
-disp(masterdofs)
-disp(['Rang(B2_help): ' num2str(rank(B2_help))])
-disp(['Rang(B_s): ' num2str(rank(B2_help(:,slavedofs)))])
-if rank(B2_help)>rank(B2_help(:,slavedofs)) && m<=size(masterdofs,2)/2
-    masterdofs=masterdofs_subs;
+%mdof_free=[size(p.L_man,2)-size(zerocol,2)+1:size(masterdofs_subs,2)];
+%disp('mdof_free:')
+%disp(mdof_free)
+%disp('masterdofs')
+%disp(masterdofs)
+%disp(['Rang(B2_help): ' num2str(rank(B2_help))])
+%disp(['Rang(B_s): ' num2str(rank(B2_help(:,slavedofs)))])
+
+% Choose global dofs in "masterdofs"
+if rank(B2_help)>rank(B2_help(:,slavedofs))
+    masterdofs=masterdofs_subs;             % masterdofs_subs = all potential master-dofs with negative (Mortar) or positive (NTS) entries
     slavedofs=[1:size(B2_help,2)];
-    slavedofs([masterdofs,zerocol])=[]; 
+    slavedofs([masterdofs,zerocol])=[];     % zerocol = all dofs with zero entries in B-Matrix only
     B_s=B2_help(:,slavedofs);
-    lm_collision=[];
-    n_collision=[];
+    n_collision=[];                         % n_collision = all dofs to delete from "masterdofs"
     i=1;
-    for l=1:size(B2_help,1)
+    for l=1:size(B2_help,1)         % Search rows, which are zero, if all potential global dofs are deleted and save their slave-dofs in "n_collision"
         if sum(abs(B_s(l,:)))<=tol && sum(abs(B2_help(l,:)))>tol
             n_slave_col=find(sign_change*B2_help(l,:)<-tol);
             for j=1:size(n_slave_col,2)
@@ -143,24 +143,29 @@ if rank(B2_help)>rank(B2_help(:,slavedofs)) && m<=size(masterdofs,2)/2
             i=i+1;
         end
     end
-    disp('n_collision')
-    disp(n_collision)
+    %disp('n_collision')
+    %disp(n_collision)
     disp(size(n_collision))
     disp(size(masterdofs))
     disp(size(p.L_man,2)-size(zerocol,2))
     n_collision2=n_collision;
-    for n=1:size(n_collision,2)
+    for n=1:size(n_collision,2) % save dofs from "n_collision", if they are in "masterdofs" as well and replace "n_collision" with them
         i=find(n_collision(n)==masterdofs);
         n_collision2(1,n)=i;
     end
     n_collision=n_collision2;
-    if (size(masterdofs,2)-size(n_collision,2))<size(p.L_man,2)-size(zerocol,2)
+    % (Note Andreas Seibold 18.02.2016): This worked only for the special
+    % cases I've calculated so far. For a more general approach masterdofs
+    % are deleted together with LMs below
+    
+    %{
+    if (size(masterdofs,2)-size(n_collision,2))<size(p.L_man,2)-size(zerocol,2) % If "n_collision" is still to long, delete waste dofs
         n_collision=n_collision(1:size(masterdofs,2)-(size(p.L_man,2)-size(zerocol,2)));
     end
-    masterdofs(n_collision)=[];
+    %}
+    masterdofs(n_collision)=[]; % delete dofs from "n_collision" from "masterdofs" to achieve global dofs in "masterdofs" only
     slavedofs=[1:size(B2_help,2)];
     slavedofs([masterdofs,zerocol])=[];     
-    
 end
 
 disp('masterdofs:')
@@ -174,77 +179,127 @@ disp('slavedofs:')
 disp(slavedofs)
 disp(size(slavedofs))
 
-lm_delete=[];
+% Search for redundant LMs
+lm_delete=[];   % Vektor of redundant or zero LMs, which have to be deleted
 lm_del=1;
-lm_set=[1:size(B2_help,1)];
+lm_zero=[];
+z=1;
+lm_set=[1:size(B2_help,1)]; % Set of all LMs
 l=1;
 N_check=2;
-while size(lm_set,2)>rank(B2_help(:,slavedofs)) && l<=size(lm_set,2) && N_check<=3
-    lm_redundant=0;
-    if sum(abs(B2_help(lm_set(l),slavedofs)))>tol
-        for lm=1:size(lm_set,2)
-            if lm_set(lm)~=lm_set(l) && sum(abs(B2_help(lm_set(lm),slavedofs)))>tol
-                if N_check==2
-                    lm_check=[lm_set(l);lm_set(lm)];
-                    B_check=B2_help(lm_check,slavedofs);
-                    if rank(B_check)<N_check
-                        disp('B_check')
-                        disp(B_check)
-                        disp('lm_check')
-                        disp(lm_check)
-                        lm_delete(lm_del)=lm_set(l);
-                        lm_del=lm_del+1;
-                        lm_set(l)=[];
-                        lm_redundant=1;
+mdof_tolarge=0;     % "mdof_tolarge": 1="masterdofs" is to large; 2=an entry in "masterdofs" has just been deleted; 0="masterdofs" is equal to global dofs
+
+while size(lm_set,2)>rank(B2_help(:,slavedofs)) && l<=size(lm_set,2) && N_check<=3 % There are linear dependent equations in "B2_help"
+    if mdof_tolarge==2  % Reset the set of LMs befor starting with deleting LMs after waste masterdofs were deleted
+        lm_set=[1:size(B2_help,1)]; % Set of all LMs
+        lm_set(lm_zero)=[];
+        l=1;
+        N_check=2;
+    end
+    lm_redundant=0; 
+    
+    if size(masterdofs,2)>size(p.L_man,2)-size(zerocol,2) % Check if "masterdofs" is to large
+        slavedofs=[1:size(B2_help,2)];
+        slavedofs([masterdofs,zerocol])=[];
+        mdof_tolarge=1;   
+    else
+        mdof_tolarge=0;
+    end
+    if sum(abs(B2_help(lm_set(l),slavedofs)))>tol   % If the current equation (here: compare-LM) is no zero LM
+        for lm=1:size(lm_set,2)                         % Loop over all other LMs
+            if lm_set(lm)~=lm_set(l) && sum(abs(B2_help(lm_set(lm),slavedofs)))>tol % The looped LM is not equal to the compare-LM and the equation is not zero
+                if N_check==2   % Two equations are compared
+                    lm_check=[lm_set(l);lm_set(lm)];    
+                    B_check=B2_help(lm_check,slavedofs);    % Matrix of two equations with compare-LM and looped LM
+                    if rank(B_check)<N_check    % If the rank of the Check-Matrix is lower than the number of compared equations, the equations are linear dependent and one LM is written in "lm_delete"
+                        if mdof_tolarge==1 % If there are to many masterdofs left, delete one masterdof first, before you continue with the LMs
+                            mdof=find(abs(B2_help(lm_set(l),:))>tol);
+                            for m=1:size(mdof,2)
+                                i=find(mdof(m)==masterdofs);
+                                if isempty(i)==0
+                                    %disp(['deleted masterdof: ' num2str(masterdofs(i))])
+                                    masterdofs(i)=[];
+                                    mdof_tolarge=2;
+                                    break
+                                end
+                            end
+                        else
+                            %disp('B_check')
+                            %disp(B_check)
+                            %disp('lm_check')
+                            %disp(lm_check)
+                            lm_delete(lm_del)=lm_set(l);
+                            lm_del=lm_del+1;
+                            lm_set(l)=[];
+                            lm_redundant=1;
+                        end
                         break
                     end
-                else
-                    for i=1:size(lm_set,2)
+                else    % Three equations are compared
+                    for i=1:size(lm_set,2)  % Loop again over all other LMs
                         if lm_set(i)~=lm_set(l) && lm_set(i)~=lm_set(lm) && sum(abs(B2_help(lm_set(i),slavedofs)))>tol
-                            lm_check=[lm_set(l);lm_set(lm);lm_set(i)];
+                            lm_check=[lm_set(l);lm_set(lm);lm_set(i)];  % Analog to comparison of two equations, three equations are checked 
                             B_check=B2_help(lm_check,slavedofs);
                             if rank(B_check)<N_check
-                                disp('B_check')
-                                disp(B_check)
-                                disp('lm_check')
-                                disp(lm_check)
-                                lm_delete(lm_del)=lm_set(l);
-                                lm_del=lm_del+1;
-                                lm_set(l)=[];
-                                lm_redundant=1;
+                                if mdof_tolarge==1
+                                    mdof=find(abs(B2_help(lm_set(l),:))>tol);
+                                    for m=1:size(mdof,2)
+                                        j=find(mdof(m)==masterdofs);
+                                        if isempty(j)==0
+                                            %disp(['deleted masterdof: ' num2str(masterdofs(j))])
+                                            masterdofs(j)=[];
+                                            mdof_tolarge=2;
+                                            break
+                                        end
+                                    end
+                                else
+                                    %disp('B_check')
+                                    %disp(B_check)
+                                    %disp('lm_check')
+                                    %disp(lm_check)
+                                    lm_delete(lm_del)=lm_set(l);
+                                    lm_del=lm_del+1;
+                                    lm_set(l)=[];
+                                    lm_redundant=1;
+                                end
                                 break
                             end
                         end
-                        if lm_redundant>0
+                        if lm_redundant>0 || mdof_tolarge==2
                             break
                         end
                     end
                 end
             end
-            if lm_redundant>0
+            if lm_redundant>0 || mdof_tolarge==2
                 break
             end
         end
-    else
+    else    % For zero-rows:
         lm_delete(lm_del)=lm_set(l);
         lm_del=lm_del+1;
+        lm_zero(z)=lm_set(l); % In lm_zero are all zero-rows saved, as lm_set is reset after masterdofs are deleted and must not be considered in the following loops
+        z=z+1;
         lm_set(l)=[];
         lm_redundant=1;
     end
-    if lm_redundant==1
+    if lm_redundant==1 || mdof_tolarge==2
         l=1;
     else
-        l=l+1;
+        l=l+1;  % If there are no redundant lms, or to many global dofs, go to further LMs
     end
     if l>size(lm_set,2)
         l=1;
-        N_check=N_check+1;
+        N_check=N_check+1; % If all LMs are checked, do the loop again for three equations
     end
 end
-
+disp('masterdofs:')
+disp(masterdofs)
 disp('lm_delete:')
 disp(lm_delete)
-
+%masterdofs=[33, 34, 35, 36, 37, 38, 39, 40, 65, 66];
+slavedofs=[1:size(B2_help,2)];
+slavedofs([masterdofs,zerocol])=[];
 %disp(lm_delete)
 %lm_delete=[9, 10, 27, 28];
 %lm_delete=[5,6,7,8,13,14,15,16]; %NTS2x2
@@ -298,22 +353,14 @@ B_s=B2_help(:,slavedofs);
 disp('B_s:')
 disp(B_s)
 disp(size(B_s))
-disp('Rang:')
-disp(rank(B_s))
-disp(rank(B2_help))
-disp(rank(p.B2))
-%disp('B_m:')
-%disp(B_m)
-%disp(size(B_m))
-disp('Determinante of B_s:')
+
+disp('Determinant of B_s:')
 disp(det(B_s))
 L=-inv(B_s)*B_m;
 disp('Hilfsmatrix L:')
 disp(L)
 disp(size(L))
-disp(size(masterdofs))
-disp(size(slavedofs))
-disp(['g_dof: ' num2str(g_dof-1)])
+
 
 for m=1:size(L,2) % go through interface-slave dofs = number of rows of L
     g=find(p.L_man(masterdofs(m),:)==1);
