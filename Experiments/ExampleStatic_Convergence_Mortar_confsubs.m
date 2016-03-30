@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-p.Solver = 'FULLsolver';
-%p.Solver = 'FETIstaticsolverExp2';
+%p.Solver = 'FULLsolver';
+p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -146,7 +146,7 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=1;
+p.globalassembly=0;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
@@ -156,14 +156,14 @@ p.globalassembly=1;
 %p.sizes = [6/5, 1, 4/5, 3;
 %               1,1,1,0.5]; % size of subsstructures in meters from first substructure to last; first line = length, second line = height
 %p.elcount = [5, 2, 5, 2]; % element count in y-direction for each substructure from first to last
-p.Height = 1.5; % cantilever height in meters
-p.Length = 3; % cantilever length in meters
+p.Height = 2; % cantilever height in meters
+p.Length = 4; % cantilever length in meters
 %p.sizes = [3, 3;
 %    1, 0.5];
 %p.elcount = [2, 1];
-p.sizes = [4/3, 1, 2/3, 2, 1; % B-Matrix_assembliert.xlsx
-            1, 1, 1, 0.5, 0.5];
-p.elcount = [3, 1, 3, 1, 2];
+p.sizes = [2, 2, 2, 2; % B-Matrix_assembliert.xlsx
+            1, 1, 1, 1];
+p.elcount = [3, 2, 1, 3];
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];
@@ -268,7 +268,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:1
+for z=1:10
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
@@ -290,7 +290,7 @@ for z=1:1
         Params(CaseNr).p.Height = p.Height;
         Params(CaseNr).p.Length = p.Length;
         Params(CaseNr).p.sizes = p.sizes;
-        Params(CaseNr).p.elcount = p.elcount;
+        Params(CaseNr).p.elcount = p.elcount.*z;
     end
     Params(CaseNr).p.CaseRuns = z;
     Params(CaseNr).p.NoPattern = 0;
@@ -312,6 +312,7 @@ end
 % start calculation
 % parpool(min(length(Params)));
 convergence=zeros(2,length(Params));
+iterations=convergence;
 disp('Convergence')
 disp(convergence)
 n=1;
@@ -319,16 +320,18 @@ for Case = 1:length(Params)
     [p] = FETI(Params(Case).p);
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
     disp(['Tracking: ' num2str(p.tracking)])
-    convergence(1,n)=size(p.L_man,2);
+    convergence(1,n)=size(p.B,2);
     convergence(2,n)=p.tracking;
+    iterations(1,n)=convergence(1,n);
+    iterations(2,n)=p.PlotIterations;
     disp('Convergence')
     disp(convergence)
     n=n+1;
 end
 
 figure(10)
-hold on
-plot(convergence(1,1:end-1),convergence(2,1:end-1))
-plot(convergence(1,end),convergence(2,end),'*r')
-hold off
+plot(convergence(1,:),convergence(2,:))
+figure(11)
+plot(iterations(1,:),iterations(2,:))
+
 %close all;
