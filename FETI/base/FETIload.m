@@ -69,7 +69,7 @@ switch p.mode
                 for row = [ceil(p.Nely/2) (ceil(p.Nely/2)+1)]
                     p.fs{p.Ns}(2*(p.Nelx+1)*row-1) = 2*p.axforce;
                 end
-            case 6
+            case 6 % axial force-field 
                 i=1;
                 %j=1;
                 %x=[];
