@@ -101,6 +101,28 @@ switch p.mode
                     end
                 end
                 %plot(x,y)
+            case 7      % Vertical bendforce at neutral axis
+                for s=1:size(p.right_side,2)
+                    if p.poss(2,p.right_side(s))<=p.Height/2 && p.poss(2,p.right_side(s))+p.sizes(2,p.right_side(s))>=p.Height/2
+                        row1=floor((p.Height/2-p.poss(2,p.right_side(s)))/p.elHeight(p.right_side(s)))+1;
+                        disp(p.Height/2)
+                        disp(p.poss(2,p.right_side(s)))
+                        disp(p.elHeight(p.right_side(s)))
+                        disp(['row1: ' num2str(row1)])
+                        disp(['elcount: ' num2str(p.elcount(p.right_side(s)))])
+                        if p.elcount(p.right_side(s))+1>=row1+1
+                            ratio=abs(1-(p.Height/2-p.poss(2,p.right_side(s))-(row1-1)*p.elHeight(p.right_side(s)))/p.elHeight(p.right_side(s)));
+                            row2=row1+1;
+                            disp(['ratio: ' num2str(ratio)])
+                            p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce*ratio;
+                            p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row2)=-p.bendforce*(1-ratio);
+                        else
+                            p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce;
+                        end
+                        disp(p.fs{p.right_side(s)})
+                        break
+                    end
+                end
         end
 end
 

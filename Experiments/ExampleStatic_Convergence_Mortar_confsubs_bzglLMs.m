@@ -9,12 +9,12 @@ p.mode = 'static';
 %% set material parameters
 % parameters for material 1 (St for steel)
 p.ESt = 200e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuSt = 0.3; % Querdehnzahl / poissons ratio / [-]
+p.nuSt = 0;%0.3; % Querdehnzahl / poissons ratio / [-]
 p.rhoSt = 7.85; % Dichte / density / [g/cm^3]
 
 % parameters for material 1 (Rub for rubber)
 p.ERub = 0.2e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuRub = 0;%0.4; % Querdehnzahl / poissons ratio / [-]
+p.nuRub = 0.4; % Querdehnzahl / poissons ratio / [-]
 p.rhoRub = 0.92; % Dichte / density / [g/cm^3]
 
 
@@ -156,26 +156,25 @@ p.globalassembly=0;
 %p.sizes = [6/5, 1, 4/5, 3;
 %               1,1,1,0.5]; % size of subsstructures in meters from first substructure to last; first line = length, second line = height
 %p.elcount = [5, 2, 5, 2]; % element count in y-direction for each substructure from first to last
-p.Height = 2; % cantilever height in meters
-p.Length = 4; % cantilever length in meters
+p.Height = 1; % cantilever height in meters
+p.Length = 10; % cantilever length in meters
 %p.sizes = [3, 3;
 %    1, 0.5];
 %p.elcount = [2, 1];
-p.sizes = [2, 2, 2, 2; % B-Matrix_assembliert.xlsx
-            1, 1, 1, 1];
-p.elcount = [3, 2, 1, 3];
+p.sizes = [5, 5; % B-Matrix_assembliert.xlsx
+            1, 1];
+p.elcount = [3, 2];
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];
 
-p.elThick = 0.1;
+p.elThick = 1;
 p.StaticIterations = 1; % Do not solve
 p.geom_tol = 1e-9; % Global tolerance for control of floating-point operations (e.g. geometric positioning vectors)
     
 % Parameters for conforming meshes (Srd-LM)
 p.Nely = 2; % number of elements in y-direction
 p.Nelx = 6; % number of elements in x-direction
-p.elThick = 0.1; % thickness of structure in meters
 p.elHeight = 0.5; % height and length of one FE element in meters
 p.Nsy = 2; % number of substructures in y direction
 p.Nsx = 1; % number of substructures in x direction
@@ -194,8 +193,8 @@ p.Nsx = 1; % number of substructures in x direction
 % number counting in x direction
 %
 
-p.SteelRowNrsOddNsx = [];
-p.SteelRowNrsEvenNsx = [];
+p.SteelRowNrsOddNsx = [1 2 3 4 5 6 7 8 9];
+p.SteelRowNrsEvenNsx = [1 2 3 4 5 6 7 8 9];
 
 % if ChangeForEvenNsy is set true/1, the material setting for Odd/Even is
 % switched the other way round for every row of substructures
@@ -205,13 +204,13 @@ p.ChangeForEvenNsy = 0;
 
 
 %% loading
-p.Loadcase = 6;
+p.Loadcase = 7;
 %p.Loadcase = 1;
-p.bendforce = 100;
+p.bendforce = 10000;
 p.axforce = -500;
 p.axforcefield_max = -500;
 p.axforcefield_offset = -500;
-%p.clamping = 4;
+p.clamping = 4;
 
 
 

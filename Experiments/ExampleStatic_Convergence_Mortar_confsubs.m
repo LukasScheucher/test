@@ -205,7 +205,7 @@ p.ChangeForEvenNsy = 0;
 
 
 %% loading
-p.Loadcase = 1;
+p.Loadcase = 7;
 %p.Loadcase = 1;
 p.bendforce = 100;
 p.axforce = 500;
