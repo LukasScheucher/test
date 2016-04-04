@@ -381,7 +381,7 @@ function [p]=FETIpost(p)
                     xlim(2) = max(max(NodalPosMult{i}{s}(1:2:end)) + PlotMargin,xlim(2));
                 end
             end
-            p.tracking=us{1}{p.Ns}(end);
+            p.tracking=us{1}{p.tracking_dof(1)}(p.tracking_dof(2));
             disp('Deformation of rightmost and uppermost point:')
             disp(p.tracking)
             

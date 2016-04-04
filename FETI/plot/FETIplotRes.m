@@ -10,6 +10,8 @@ function FETIplotRes(p)
     %set(gca,'YTick',[1e-10 1e-8 1e-6 1e-4 1e-2 1 1e2 1e4]);
     %set(gca,'XTick',[0 20 40 60 80 100 120 140 160]);
     xlim([0 p.StaticIterations+1]);
+    disp('ylim:')
+    disp(p.Residual)
     ylim([min(p.Residual)/7 max(p.Residual)*7]);
     set(gcf,'color','w');
     if ~p.NoWrite

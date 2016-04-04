@@ -119,6 +119,7 @@ switch p.mode
                         else
                             p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce;
                         end
+                        p.tracking_dof=[p.right_side(s), 2*(p.Nelx(p.right_side(s))+1)*row1];
                         disp(p.fs{p.right_side(s)})
                         break
                     end

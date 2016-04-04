@@ -136,7 +136,7 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='Mortar'; % Implemented Methods:
+p.mesh_method='Srd-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
@@ -146,7 +146,7 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=0;
+p.globalassembly=1;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
@@ -161,9 +161,9 @@ p.Length = 10; % cantilever length in meters
 %p.sizes = [3, 3;
 %    1, 0.5];
 %p.elcount = [2, 1];
-p.sizes = [5, 5; % B-Matrix_assembliert.xlsx
-            1, 1];
-p.elcount = [3, 2];
+p.sizes = [10; % B-Matrix_assembliert.xlsx
+            1];
+p.elcount = 2;
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];
@@ -174,10 +174,10 @@ p.geom_tol = 1e-9; % Global tolerance for control of floating-point operations (
     
 % Parameters for conforming meshes (Srd-LM)
 p.Nely = 2; % number of elements in y-direction
-p.Nelx = 6; % number of elements in x-direction
+p.Nelx = 10; % number of elements in x-direction
 p.elHeight = 0.5; % height and length of one FE element in meters
-p.Nsy = 2; % number of substructures in y direction
-p.Nsx = 1; % number of substructures in x direction
+p.Nsy = 1; % number of substructures in y direction
+p.Nsx = 2; % number of substructures in x direction
 
 % every substructure is rectangular, build out of Nely times Nelx FE elements
 % for every row of FE elements (counting starts from the bottom, going in y direction)
@@ -266,7 +266,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:5
+for z=1:1
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;

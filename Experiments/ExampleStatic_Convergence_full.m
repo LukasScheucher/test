@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-%p.Solver = 'FULLsolver';
-p.Solver = 'FETIstaticsolverExp2';
+p.Solver = 'FULLsolver';
+%p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -146,7 +146,7 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=0;
+p.globalassembly=1;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
@@ -161,9 +161,9 @@ p.Length = 10; % cantilever length in meters
 %p.sizes = [3, 3;
 %    1, 0.5];
 %p.elcount = [2, 1];
-p.sizes = [5, 5; % B-Matrix_assembliert.xlsx
-            1, 1];
-p.elcount = [3, 2];
+p.sizes = [10; % B-Matrix_assembliert.xlsx
+            1];
+p.elcount = 2;
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];
@@ -266,7 +266,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:5
+for z=1:1
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
