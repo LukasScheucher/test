@@ -136,7 +136,7 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='Mortar'; % Implemented Methods:
+p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
