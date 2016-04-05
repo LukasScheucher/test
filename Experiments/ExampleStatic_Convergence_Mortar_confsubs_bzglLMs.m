@@ -314,6 +314,9 @@ iterations=convergence;
 disp('Convergence')
 disp(convergence)
 n=1;
+
+addpaths;
+
 for Case = 1:length(Params)
     [p] = FETI(Params(Case).p);
     disp(['p.nonconforming: ' num2str(p.nonconforming)])

@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-p.Solver = 'FULLsolver';
-%p.Solver = 'FETIstaticsolverExp2';
+%p.Solver = 'FULLsolver';
+p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -136,7 +136,7 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='Mortar'; % Implemented Methods:
+p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
@@ -323,6 +323,7 @@ for Case = 1:length(Params)
     convergence(2,n)=p.tracking;
     disp('Convergence')
     disp(convergence)
+    disp(['Nlm: ' num2str(p.Nlm)])
     n=n+1;
 end
 

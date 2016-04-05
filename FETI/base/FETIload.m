@@ -52,6 +52,7 @@ switch p.mode
         switch p.Loadcase 
             case 1  % rechts oben y
                 p.fs{p.Ns}(p.Ndof_s_Free(p.Ns)) = -p.bendforce;
+                p.tracking_dof=[p.Ns, p.Ndof_s_Free(p.Ns)];
             case 2  % rechts oben x
                 p.fs{p.Ns}(p.Ndof_s_Free(p.Ns)-1) = p.axforce;
                 %p.fs{p.Ns}(2*(p.Nelx+1)-1) = p.axforce;
@@ -102,28 +103,47 @@ switch p.mode
                 end
                 %plot(x,y)
             case 7      % Vertical bendforce at neutral axis
-                for s=1:size(p.right_side,2)
-                    if p.poss(2,p.right_side(s))<=p.Height/2 && p.poss(2,p.right_side(s))+p.sizes(2,p.right_side(s))>=p.Height/2
-                        row1=floor((p.Height/2-p.poss(2,p.right_side(s)))/p.elHeight(p.right_side(s)))+1;
-                        disp(p.Height/2)
-                        disp(p.poss(2,p.right_side(s)))
-                        disp(p.elHeight(p.right_side(s)))
-                        disp(['row1: ' num2str(row1)])
-                        disp(['elcount: ' num2str(p.elcount(p.right_side(s)))])
-                        if p.elcount(p.right_side(s))+1>=row1+1
-                            ratio=abs(1-(p.Height/2-p.poss(2,p.right_side(s))-(row1-1)*p.elHeight(p.right_side(s)))/p.elHeight(p.right_side(s)));
-                            row2=row1+1;
-                            disp(['ratio: ' num2str(ratio)])
-                            p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce*ratio;
-                            p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row2)=-p.bendforce*(1-ratio);
-                        else
-                            p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce;
+                if p.nonconforming==1
+                    for s=1:size(p.right_side,2)
+                        if p.poss(2,p.right_side(s))<=p.Height/2 && p.poss(2,p.right_side(s))+p.sizes(2,p.right_side(s))>=p.Height/2
+                            row1=floor((p.Height/2-p.poss(2,p.right_side(s)))/p.elHeight(p.right_side(s)))+1;
+                            if p.elcount(p.right_side(s))+1>=row1+1
+                                ratio=abs(1-(p.Height/2-p.poss(2,p.right_side(s))-(row1-1)*p.elHeight(p.right_side(s)))/p.elHeight(p.right_side(s)));
+                                row2=row1+1;
+                                p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce*ratio;
+                                p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row2)=-p.bendforce*(1-ratio);
+                            else
+                                p.fs{p.right_side(s)}(2*(p.Nelx(p.right_side(s))+1)*row1)=-p.bendforce;
+                            end
+                            p.tracking_dof=[p.right_side(s), 2*(p.Nelx(p.right_side(s))+1)*row1];
+                            disp(p.fs{p.right_side(s)})
+                            break
                         end
-                        p.tracking_dof=[p.right_side(s), 2*(p.Nelx(p.right_side(s))+1)*row1];
-                        disp(p.fs{p.right_side(s)})
-                        break
                     end
+                else
+                    p.right_side=zeros(1,p.Nsy);
+                    for i=1:p.Nsy
+                        p.right_side(i)=i*p.Nsx;
+                    end
+                    s=ceil(p.Nsy/2)*p.Nsx;
+                    disp(s)
+                    posy=floor(p.Nsy/2)*p.Nely(1)*p.elHeight;
+                    disp(posy)
+                    row1=floor((p.Height/2-posy)/p.elHeight)+1;
+                    disp(row1)
+                    if p.Nely>=row1
+                        row2=row1+1;
+                        ratio=abs(1-((p.Height/2-posy)-(row1-1)*p.elHeight)/p.elHeight);
+                        disp(['ratio: ' num2str(ratio)])
+                        p.fs{s}(2*(p.Nelx+1)*row1)=-p.bendforce*ratio;
+                        p.fs{s}(2*(p.Nelx+1)*row2)=-p.bendforce*(1-ratio);
+                    else
+                        p.fs{s}(2*(p.Nelx+1)*row1)=-p.bendforce;
+                    end
+                    p.tracking_dof=[s, 2*(p.Nelx+1)*row1];
+                    disp(p.fs{s})
                 end
+                
         end
 end
 

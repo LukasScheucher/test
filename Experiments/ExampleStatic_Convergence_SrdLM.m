@@ -266,7 +266,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:1
+for z=1:7
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
@@ -275,13 +275,13 @@ for z=1:1
     Params(CaseNr).p.description = '';
     Params(CaseNr).p.mesh_method=p.mesh_method;%1;
     if strcmp(Params(CaseNr).p.mesh_method,'Srd-LM')
-        Params(CaseNr).p.Nely = double(p.Nely0 + int32((z - 1)*p.Nely0/2)); % number of elements in y-direction of a substructure
-        Params(CaseNr).p.Nelx = double(int32(Params(CaseNr).p.Nely*p.Nelx0/p.Nely0)); % number of elements in x-direction of a substructure
+        Params(CaseNr).p.Nely = p.Nely0*z; % number of elements in y-direction of a substructure
+        Params(CaseNr).p.elHeight = p.elHeight0/z; % number of elements in x-direction of a substructure
+        Params(CaseNr).p.Nelx = p.Nelx0*z; % number of elements in x-direction of a substructure
         disp('p.Nelx: ')
         disp(Params(CaseNr).p.Nelx)
         disp('p.Nely: ')
         disp(Params(CaseNr).p.Nely)
-        Params(CaseNr).p.elHeight = p.elHeight0*Params(CaseNr).p.Nely/p.Nely0; % number of elements in x-direction of a substructure
         Params(CaseNr).p.Nsy = p.Nsy; % number of substructures in y-direction
         Params(CaseNr).p.Nsx = p.Nsx; % number of substructures in x-direction
     else
@@ -314,8 +314,13 @@ iterations=convergence;
 disp('Convergence')
 disp(convergence)
 n=1;
+
+addpaths;
+
 for Case = 1:length(Params)
     [p] = FETI(Params(Case).p);
+    display(['Case length=' num2str(Params(Case).p.elHeight*Params(Case).p.Nelx*Params(Case).p.Nsx) ' m;   height=' num2str(Params(Case).p.elHeight*Params(Case).p.Nely*Params(Case).p.Nsy) ' m']);
+    disp(['Nelx: ' num2str(p.Nelx) ', Nely: ' num2str(p.Nely) ', elHeight: ' num2str(p.elHeight)])
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
     disp(['Tracking: ' num2str(p.tracking)])
     convergence(1,n)=size(p.B,1);
