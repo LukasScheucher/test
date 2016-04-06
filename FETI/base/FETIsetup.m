@@ -14,6 +14,18 @@ for i=1:size(Checklist,1)
     end
 end
 
+if strcmp(p.mesh_method,'Srd-LM')
+    p.nonconforming=0;
+else
+    p.nonconforming=1;
+end
+
+if strcmp(p.Solver,'FULLsolver') || strcmp(p.mode,'dynamic')
+    p.globalassembly=1;
+else
+    p.globalassembly=0;
+end
+
 if strcmp(p.mode,'static')
     p.t = 1;
 end
@@ -29,12 +41,6 @@ elseif p.Coarse == 1
     p.CoarseGrid = 'RBM';
 elseif p.Coarse == 2
     p.CoarseGrid = 'GenEO';
-end
-
-if strcmp(p.mesh_method,'Srd-LM')
-    p.nonconforming=0;
-else
-    p.nonconforming=1;
 end
 
 end

@@ -349,6 +349,12 @@ function [p]=FETIpost(p)
                 us{4}{s}(1:size(p.L{s}',1),1) = 0;
                 us{5}{s}(1:size(p.L{s}',1),1) = uAdd;
                 us{6}{s} = uDeformation + uAdd;
+                
+                if p.cal_strains==1
+                    for i=1:6   % Calculation of strains
+                        eps{i}{s} = ;
+                    end
+                end
 
             end
             

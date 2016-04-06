@@ -7,6 +7,7 @@ Checklist={'mesh_method','Srd-LM';
     'max_iteration','1';
     'geom_tol','1e-9';
     'globalassembly','0';
+    'cal_strains','0';
     };
 disp(size(Checklist))
 

@@ -140,13 +140,15 @@ p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
+                        
+p.cal_strains=1;
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=0;
+%p.globalassembly=0;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
