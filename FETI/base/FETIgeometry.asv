@@ -587,11 +587,6 @@ if p.nonconforming==1
                                 disp(1+(1-n_convert)*N_s_self(int))
                                 if m_R>N_int-n_convert*(N_int-N_s_self(int)) || m_R<1+(1-n_convert)*N_s_self(int) % Slave-Node is not between outermost master nodes
                                     if p.addNTSLMs==1
-                                        
-                                        %!!!!!Überprüfen, ob weitere
-                                        %überhängende Slave-Nodes existieren und der betrachtete Slave-Node der von diesen dem Master-Körper am nächsten liegende ist
-                                        %!!!!!
-                                        
                                         if m_R>N_int-n_convert*(N_int-N_s_self(int)) % Slave-node is on the right side of the rightmost master-node
                                             m_R=m_C-1;
                                             ratio=ratio/abs(p.posn_int{int}(2,m_C)-p.posn_int{int}(2,m_R));

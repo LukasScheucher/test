@@ -91,72 +91,110 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
 
             end
             %%
-
-            for r = 1:p.Nely(s) % r: row (substructure-local)
-                clear X Y Z
-                %--% datatipIndex = 0;
-                for c = 1:p.Nelx(s) % c: column (substructure-local)
-                    %--% datatipIndex = datatipIndex + 4;
-
-                    % for the bottom nodes, element row = nodes row
-                    % for the left nodes, element column = nodes column
-
-                    % left bottom node (local 1)
-                    i = (r-1)*(p.Nelx(s)+1)+c; % i: node nr of the left bottom node
-                    %--% datatip{datatipIndex + 1} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
-                    X(1,c) = NodalPos{s}(2*i-1);
-                    Y(1,c) = NodalPos{s}(2*i);
-                    % right bottom node: (local 2)
-                    i = i+1;
-                    %--% datatip{datatipIndex + 2} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
-                    X(1,c+1) = NodalPos{s}(2*i-1);
-                    Y(1,c+1) = NodalPos{s}(2*i);
-                    % right upper node: (local 3)
-                    i = i+(p.Nelx(s)+1);
-                    %--% datatip{datatipIndex + 3} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
-                    X(2,c+1) = NodalPos{s}(2*i-1);
-                    Y(2,c+1) = NodalPos{s}(2*i);
-                    % left upper node: (local 4)
-                    i = i-1;
-                    %--% datatip{datatipIndex + 4} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
-                    X(2,c) = NodalPos{s}(2*i-1);
-                    Y(2,c) = NodalPos{s}(2*i);
-                end
-
-                % after every row, plot that row
-                Z=zeros(size(X,1),size(X,2));
-                %hmesh = mesh(X,Y,Z);
-                hmesh = patch(surf2patch(X,Y,Z)); % nearly 4x faster than mesh()
-                if mod(s,2)
-                    if ( (Odd && ~isempty(find(r == p.SteelRowNrsOddNsx,1))) || (~Odd && ~isempty(find(r == p.SteelRowNrsEvenNsx,1))) )
-                        color = [0 101 189]./255; % steel
-                        %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> steel']);
+            if p.cal_strains==1
+                disp('lim')
+                disp(xlim)
+                disp(ylim)
+                axis equal
+                axis([xlim(1) xlim(2) ylim(1) ylim(2)]);
+                for e=1:p.Nelx(s)*p.Nely(s)
+                    disp(['Subs: ' num2str(s) ', Element: ' num2str(e)])
+                    
+                    el_x=p.x_el{s}{e}(1:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(1:2:size(p.x_el{s}{e},1));
+                    el_y=p.x_el{s}{e}(2:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(2:2:size(p.x_el{s}{e},1));
+                    
+                    disp(el_x)
+                    disp(el_y)
+                    disp(p.d_el{s}{e}(2:2:size(p.x_el{s}{e},1)))
+                    
+                    if p.cal_stress==1
+                        color=p.stress{s}{e}(p.strain_dir,:);
                     else
-                        %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> rubber']);
-                        %color = [218 215 203]./255; % rubber
-                        color = [186 183 171]./255; % rubber
-                        %color = [162 173 0]./255; % rubber green
+                        color=p.eps{s}{e}(p.strain_dir,:);
                     end
-                    set(hmesh,'FaceAlpha',0.55);
+
+                    patch(el_x,el_y,color,'CDataMapping','scaled','EdgeColor','k','Marker','o','MarkerFaceColor','k');
+
+                end
+                %set(hmesh,'EdgeColor',[0 0 0]);
+                %set(hmesh,'EdgeAlpha',0.5);
+                %set(hmesh,'FaceColor',color);
+                %set(hmesh,'LineWidth',0.5); % 1.5 for png pictures
+                colormap(jet(128));
+                if p.cal_stress==1
+                    colorbar('location','eastoutside','YLim',[p.stress_min(p.strain_dir) p.stress_max(p.strain_dir)]);
                 else
-                    if ( (Odd && ~isempty(find(r == p.SteelRowNrsOddNsx,1))) || (~Odd && ~isempty(find(r == p.SteelRowNrsEvenNsx,1))) )
-                        color = [0 101 189]./255; % steel
-                        %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> steel']);
-                    else
-                        %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> rubber']);
-                        %color = [218 215 203]./255; % rubber
-                        color = [186 183 171]./255; % rubber
-                        %color = [162 173 0]./255; % rubber green
-                    end
-                    set(hmesh,'FaceAlpha',0.5);
+                    colorbar('location','eastoutside','YLim',[p.strain_min(p.strain_dir) p.strain_max(p.strain_dir)]);
                 end
-                set(hmesh,'EdgeColor',[0 0 0]);
-                set(hmesh,'EdgeAlpha',0.5);
-                set(hmesh,'FaceColor',color);
-                set(hmesh,'LineWidth',0.5); % 1.5 for png pictures
+            else
+                for r = 1:p.Nely(s) % r: row (substructure-local)
+                    clear X Y Z
+                    %--% datatipIndex = 0;
+                    for c = 1:p.Nelx(s) % c: column (substructure-local)
+                        %--% datatipIndex = datatipIndex + 4;
 
-                %--% dcm_obj = datacursormode(FigureHandle);
-                %--% set(dcm_obj,'UpdateFcn',{@myupdatefcn,datatip});
+                        % for the bottom nodes, element row = nodes row
+                        % for the left nodes, element column = nodes column
+
+                        % left bottom node (local 1)
+                        i = (r-1)*(p.Nelx(s)+1)+c; % i: node nr of the left bottom node
+                        %--% datatip{datatipIndex + 1} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
+                        X(1,c) = NodalPos{s}(2*i-1);
+                        Y(1,c) = NodalPos{s}(2*i);
+                        % right bottom node: (local 2)
+                        i = i+1;
+                        %--% datatip{datatipIndex + 2} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
+                        X(1,c+1) = NodalPos{s}(2*i-1);
+                        Y(1,c+1) = NodalPos{s}(2*i);
+                        % right upper node: (local 3)
+                        i = i+(p.Nelx(s)+1);
+                        %--% datatip{datatipIndex + 3} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
+                        X(2,c+1) = NodalPos{s}(2*i-1);
+                        Y(2,c+1) = NodalPos{s}(2*i);
+                        % left upper node: (local 4)
+                        i = i-1;
+                        %--% datatip{datatipIndex + 4} = ['X: ' num2str(2*i-1) ', Y: ' num2str(2*i)];
+                        X(2,c) = NodalPos{s}(2*i-1);
+                        Y(2,c) = NodalPos{s}(2*i);
+                    end
+
+                    % after every row, plot that row
+                    Z=zeros(size(X,1),size(X,2));
+                    %hmesh = mesh(X,Y,Z);
+
+
+                    hmesh = patch(surf2patch(X,Y,Z)); % nearly 4x faster than mesh()
+                    if mod(s,2)
+                        if ( (Odd && ~isempty(find(r == p.SteelRowNrsOddNsx,1))) || (~Odd && ~isempty(find(r == p.SteelRowNrsEvenNsx,1))) )
+                            color = [0 101 189]./255; % steel
+                            %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> steel']);
+                        else
+                            %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> rubber']);
+                            %color = [218 215 203]./255; % rubber
+                            color = [186 183 171]./255; % rubber
+                            %color = [162 173 0]./255; % rubber green
+                        end
+                        set(hmesh,'FaceAlpha',0.55);
+                    else
+                        if ( (Odd && ~isempty(find(r == p.SteelRowNrsOddNsx,1))) || (~Odd && ~isempty(find(r == p.SteelRowNrsEvenNsx,1))) )
+                            color = [0 101 189]./255; % steel
+                            %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> steel']);
+                        else
+                            %display(['s=' num2str(s) '; Odd=' num2str(Odd) '; r=' num2str(r) ' --> rubber']);
+                            %color = [218 215 203]./255; % rubber
+                            color = [186 183 171]./255; % rubber
+                            %color = [162 173 0]./255; % rubber green
+                        end
+                        set(hmesh,'FaceAlpha',0.5);
+                    end
+                    set(hmesh,'EdgeColor',[0 0 0]);
+                    set(hmesh,'EdgeAlpha',0.5);
+                    set(hmesh,'FaceColor',color);
+                    set(hmesh,'LineWidth',0.5); % 1.5 for png pictures
+
+                    %--% dcm_obj = datacursormode(FigureHandle);
+                    %--% set(dcm_obj,'UpdateFcn',{@myupdatefcn,datatip});
+                end
             end
         end
     end

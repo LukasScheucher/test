@@ -14,6 +14,10 @@ for i=1:size(Checklist,1)
     end
 end
 
+if p.cal_stress==1
+    p.cal_strains=1;
+end
+
 if strcmp(p.mesh_method,'Srd-LM')
     p.nonconforming=0;
 else

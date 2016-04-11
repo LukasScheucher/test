@@ -136,17 +136,20 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='NTS-LM'; % Implemented Methods:
+p.mesh_method='Mortar'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
+p.cal_stress=1;
+p.strain_dir=4; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
+p.addNTSLMs=0;
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=1;
+p.globalassembly=0;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
@@ -158,9 +161,6 @@ p.globalassembly=1;
 %p.elcount = [5, 2, 5, 2]; % element count in y-direction for each substructure from first to last
 p.Height = 1.5; % cantilever height in meters
 p.Length = 3; % cantilever length in meters
-%p.sizes = [3, 3;
-%    1, 0.5];
-%p.elcount = [2, 1];
 p.sizes = [4/3, 1, 2/3, 2, 1; % B-Matrix_assembliert.xlsx
             1, 1, 1, 0.5, 0.5];
 p.elcount = [3, 1, 3, 1, 2];

@@ -350,14 +350,59 @@ function [p]=FETIpost(p)
                 us{5}{s}(1:size(p.L{s}',1),1) = uAdd;
                 us{6}{s} = uDeformation + uAdd;
                 
-                if p.cal_strains==1
-                    for i=1:6   % Calculation of strains
-                        eps{i}{s} = ;
-                    end
+                %% Calculate strains
+                if p.cal_strains==1 
+                    [p]=strains(NodalPos0{s},us{1}{s},s,p);
+                    disp(p.eps{s}{1})
                 end
 
             end
             
+            if p.cal_strains==1
+                strain_max_help=zeros(size(p.eps{1}{1},1),1);
+                p.strain_max=strain_max_help;
+                strain_min_help=zeros(size(p.eps{1}{1},1),1);
+                p.strain_min=strain_min_help;
+                
+                for s=1:p.Ns
+                    for e=1:p.Nelx(s)*p.Nely(s)
+                        for i=1:size(strain_max_help,1)
+                            strain_max_help(i)=max(p.eps{s}{e}(i,:));
+                            strain_min_help(i)=min(p.eps{s}{e}(i,:));
+                            if strain_max_help(i)>p.strain_max(i)
+                                p.strain_max(i)=strain_max_help(i);
+                            end
+                            if strain_min_help(i)<p.strain_min(i)
+                                p.strain_min(i)=strain_min_help(i);
+                            end
+                        end
+                    end
+                end
+                
+                if p.cal_stress==1
+                    stress_max_help=zeros(size(p.stress{1}{1},1),1);
+                    p.stress_max=stress_max_help;
+                    stress_min_help=zeros(size(p.stress{1}{1},1),1);
+                    p.stress_min=stress_min_help;
+
+                    for s=1:p.Ns
+                        for e=1:p.Nelx(s)*p.Nely(s)
+                            for i=1:size(stress_max_help,1)
+                                stress_max_help(i)=max(p.stress{s}{e}(i,:));
+                                stress_min_help(i)=min(p.stress{s}{e}(i,:));
+                                if stress_max_help(i)>p.stress_max(i)
+                                    p.stress_max(i)=stress_max_help(i);
+                                end
+                                if stress_min_help(i)<p.stress_min(i)
+                                    p.stress_min(i)=stress_min_help(i);
+                                end
+                            end
+                        end
+                    end
+                end
+                disp(p.strain_max)
+                disp(p.strain_min)
+            end
             
             
             %% identify reasonable values for xlim and ylim
@@ -410,7 +455,7 @@ function [p]=FETIpost(p)
                     figure(FigH);
                     set(FigH,'units','normalized','outerposition',[0 0 1 1]);
                     hold on;
-                    axis off;
+                    axis on;
                     SubsToPlot = 1:p.Ns;
                     %FETIplot( p, FigH, NodalPosMult{iPlot}, SubsToPlot, fsPost, PlotDescription, xlim, ylim);
                     FETIplot( p, FigH, NodalPosMult{iPlot}, SubsToPlot, fAll, PlotDescription, xlim, ylim);

@@ -8,6 +8,9 @@ Checklist={'mesh_method','Srd-LM';
     'geom_tol','1e-9';
     'globalassembly','0';
     'cal_strains','0';
+    'cal_stress','0';
+    'strain_dir','1';
+    'addNTSLMs','0';
     };
 disp(size(Checklist))
 
