@@ -90,7 +90,7 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
                 end
 
             end
-            %%
+            %%  Plot strains and stresses
             if p.cal_strains==1
                 disp('lim')
                 disp(xlim)

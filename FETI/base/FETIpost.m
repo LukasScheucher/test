@@ -352,13 +352,42 @@ function [p]=FETIpost(p)
                 
                 %% Calculate strains
                 if p.cal_strains==1 
-                    [p]=strains(NodalPos0{s},us{1}{s},s,p);
+                    if p.plot_int~=0
+                        p.eps_int{s}=zeros(2,size(p.posn_int{p.plot_int},2));
+                    end
+                    [p]=strains(NodalPos0{s},us{1}{s},s,p); 
                     disp(p.eps{s}{1})
+                    if p.plot_int~=0
+                        n=1;
+                        while n<=size(p.eps_int{s},2)
+                            if p.eps_int{s}(1,n)==0 && p.eps_int{s}(2,n)==0
+                                p.eps_int{s}(:,n)=[];
+                            else
+                                n=n+1;
+                            end
+                        end
+                        [p.eps_int{s}(2,:),I]=sort(p.eps_int{s}(2,:));
+                        p.eps_int{s}(1,:)=p.eps_int{s}(1,I);
+                        disp(p.eps_int{s})
+                    end
                 end
 
             end
             
             if p.cal_strains==1
+                if p.plot_int~=0
+                    figure
+                    hold on
+                    plot(p.eps_int{p.int(1,p.plot_int)}(2,:),p.eps_int{p.int(1,p.plot_int)}(1,:))
+                    plot(p.eps_int{p.int(2,p.plot_int)}(2,:),p.eps_int{p.int(2,p.plot_int)}(1,:))
+                    if p.int(3,p.plot_int)==1
+                        legend('left substructure','right substructure')
+                    else
+                        legend('lower substructure','upper substructure')
+                    end
+                    hold off
+                end
+                
                 strain_max_help=zeros(size(p.eps{1}{1},1),1);
                 p.strain_max=strain_max_help;
                 strain_min_help=zeros(size(p.eps{1}{1},1),1);

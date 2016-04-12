@@ -101,6 +101,7 @@ switch p.mode
                         k=k+1;
                     end
                 end
+                p.tracking_dof=[p.Ns, p.Ndof_s_Free(p.Ns)];
                 %plot(x,y)
             case 7      % Vertical bendforce at neutral axis
                 if p.nonconforming==1

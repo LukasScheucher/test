@@ -10,7 +10,7 @@ for e=1:p.Nelx(s)*p.Nely(s)
     if mod(e-1,p.Nelx(s))==0 && e>1
         el_jump=el_jump+2;
     end
-    disp(el_jump)
+
     for i=1:4
         A(i,el_jump+2*(e-1)+i)=1;
         if i<=2 
@@ -20,15 +20,11 @@ for e=1:p.Nelx(s)*p.Nely(s)
         end
     end
     
-    disp(A)
     p.x_el{s}{e}=A*X0;
     p.d_el{s}{e}=A*d;
     
     el_x=p.x_el{s}{e}(1:2:size(p.x_el{s}{e},1));
     el_y=p.x_el{s}{e}(2:2:size(p.x_el{s}{e},1));
-    
-    disp(el_x)
-    disp(el_y)
     
     xi=[-1 1 1 -1;
         -1 -1 1 1];
@@ -74,7 +70,6 @@ for e=1:p.Nelx(s)*p.Nely(s)
         
         if p.cal_stress==1
             r=floor(e/p.Nelx(s))+1;
-            disp(r)
             % Constitutive matrix for plane stress
             if (~isempty(find(r == p.SteelRowNrsOddNsx,1))) || (~isempty(find(r == p.SteelRowNrsEvenNsx,1)))
                 C=p.ESt/(1+p.nuSt^2)*[1 p.nuSt 0;
@@ -87,6 +82,38 @@ for e=1:p.Nelx(s)*p.Nely(s)
             end
             p.stress{s}{e}(1:3,node)=C*p.eps{s}{e}(:,node);
             p.stress{s}{e}(4,node)=sqrt(p.stress{s}{e}(1,node)^2+p.stress{s}{e}(2,node)^2-p.stress{s}{e}(1,node)*p.stress{s}{e}(2,node)+3*p.stress{s}{e}(3,node)^2);
+        end
+    end
+    if p.plot_int~=0
+        int=p.plot_int;
+        if p.int(3,int)~=3  
+            for n=1:size(p.posn_int{int},2)
+                if p.posn_int{int}(4,n)==s
+                    var_help=find(el_x==p.posn_int{int}(1,n));
+                    if isempty(var_help)==0
+                        for i=1:size(var_help,1)
+                            if el_y(var_help(i))==p.posn_int{int}(2,n)
+                                if p.cal_stress==1
+                                    p.eps_int{s}(1,n)=p.stress{s}{e}(p.strain_dir,var_help(i));
+                                    if p.int(3,int)==1
+                                        p.eps_int{s}(2,n)=p.posn_int{int}(2,n);
+                                    else
+                                        p.eps_int{s}(2,n)=p.posn_int{int}(1,n);
+                                    end
+                                else
+                                    p.eps_int{s}(1,n)=p.eps{s}{e}(p.strain_dir,var_help(i));
+                                    if p.int(3,int)==1
+                                        p.eps_int{s}(2,n)=p.posn_int{int}(2,n);
+                                    else
+                                        p.eps_int{s}(2,n)=p.posn_int{int}(1,n);
+                                    end
+                                end
+                                break
+                            end
+                        end
+                    end
+                end
+            end
         end
     end
     %disp(['strains(e=' num2str(e) '):'])
