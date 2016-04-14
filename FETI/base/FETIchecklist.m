@@ -12,6 +12,7 @@ Checklist={'mesh_method','Srd-LM';
     'strain_dir','1';
     'addNTSLMs','0';
     'plot_int','0';
+    'plain','1';
     };
 disp(size(Checklist))
 

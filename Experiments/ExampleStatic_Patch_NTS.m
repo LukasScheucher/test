@@ -9,7 +9,7 @@ p.mode = 'static';
 %% set material parameters
 % parameters for material 1 (St for steel)
 p.ESt = 200e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuSt = 0.3; % Querdehnzahl / poissons ratio / [-]
+p.nuSt = 0;%0.3; % Querdehnzahl / poissons ratio / [-]
 p.rhoSt = 7.85; % Dichte / density / [g/cm^3]
 
 % parameters for material 1 (Rub for rubber)
@@ -140,11 +140,18 @@ p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
-                        
+%{
 p.cal_stress=1;
+p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
+p.addNTSLMs=0;  
+p.plot_int=1;   % Interface to plot stresses/strains
+%}     
+p.cal_strains=1;                       
+p.cal_stress=0;
 p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
 p.addNTSLMs=0;
 p.plot_int=1;   % Interface to plot stresses/strains 
+p.plain=1;      % 1: Plain stress, 2: Plain strain
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
@@ -168,7 +175,7 @@ p.Length = 4; % cantilever length in meters
 %p.elcount = [2, 1];
 p.sizes = [2, 2; % B-Matrix_assembliert.xlsx
             2, 2];
-p.elcount = [1,2];%[17,23];
+p.elcount = [3, 5];
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];

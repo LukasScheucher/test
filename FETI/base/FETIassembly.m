@@ -25,8 +25,8 @@ for s=1:s_end
     %if s==1
     %    Full.K_multi=zeros(size(p.Ls_ass{s},2));
     %end
-    kSt{s} = BilinearQuadElementStiffness(p.ESt,p.nuSt,p.elThick, 0,0, p.elHeight(s),0, p.elHeight(s),p.elHeight(s), 0,p.elHeight(s), 1);
-    kRub{s} = BilinearQuadElementStiffness(p.ERub,p.nuRub,p.elThick, 0,0, p.elHeight(s),0, p.elHeight(s),p.elHeight(s), 0,p.elHeight(s), 1);
+    kSt{s} = BilinearQuadElementStiffness(p.ESt,p.nuSt,p.elThick, 0,0, p.elHeight(s),0, p.elHeight(s),p.elHeight(s), 0,p.elHeight(s), p.plain);
+    kRub{s} = BilinearQuadElementStiffness(p.ERub,p.nuRub,p.elThick, 0,0, p.elHeight(s),0, p.elHeight(s),p.elHeight(s), 0,p.elHeight(s), p.plain);
 
     % [E] = Einheit E-Modul
     % [s] = Einheit Elementdicke, Elementkoordinaten

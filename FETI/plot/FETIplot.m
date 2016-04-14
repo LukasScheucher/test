@@ -92,20 +92,12 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
             end
             %%  Plot strains and stresses
             if p.cal_strains==1
-                disp('lim')
-                disp(xlim)
-                disp(ylim)
                 axis equal
                 axis([xlim(1) xlim(2) ylim(1) ylim(2)]);
                 for e=1:p.Nelx(s)*p.Nely(s)
-                    disp(['Subs: ' num2str(s) ', Element: ' num2str(e)])
                     
                     el_x=p.x_el{s}{e}(1:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(1:2:size(p.x_el{s}{e},1));
                     el_y=p.x_el{s}{e}(2:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(2:2:size(p.x_el{s}{e},1));
-                    
-                    disp(el_x)
-                    disp(el_y)
-                    disp(p.d_el{s}{e}(2:2:size(p.x_el{s}{e},1)))
                     
                     if p.cal_stress==1
                         color=p.stress{s}{e}(p.strain_dir,:);

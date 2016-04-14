@@ -26,9 +26,11 @@ disp('Building geometry finished')
 
 disp('Assembly finished')
 
-[p] = FETIscaling(p);
-[p] = FETIpreconditioner(p);
-[p] = FETIcoarse(p);
+if strcmp(p.Solver,'FULLsolver')~=1
+    [p] = FETIscaling(p);
+    [p] = FETIpreconditioner(p);
+    [p] = FETIcoarse(p);
+end
 
 
 %% pre-solve plots

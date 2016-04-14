@@ -4,7 +4,6 @@ function [p] = strains(X0,d,s,p)
 % strains
 el_jump=0;
 for e=1:p.Nelx(s)*p.Nely(s)
-    disp(['Element: ' num2str(e)])
     A=zeros(8,size(X0,1)); % Map global dofs of the element's upper nodes to local dofs of the element in opposite clock direction
     
     if mod(e-1,p.Nelx(s))==0 && e>1
@@ -72,13 +71,25 @@ for e=1:p.Nelx(s)*p.Nely(s)
             r=floor(e/p.Nelx(s))+1;
             % Constitutive matrix for plane stress
             if (~isempty(find(r == p.SteelRowNrsOddNsx,1))) || (~isempty(find(r == p.SteelRowNrsEvenNsx,1)))
-                C=p.ESt/(1+p.nuSt^2)*[1 p.nuSt 0;
-                    p.nuSt 1 0;
-                    0 0 (1-p.nuSt)/2];
+                if p.plain==1
+                    C=p.ESt/(1+p.nuSt^2)*[1 p.nuSt 0;
+                        p.nuSt 1 0;
+                        0 0 (1-p.nuSt)/2];
+                elseif p.plain==2
+                    C=p.ESt/((1+p.nuSt)*(1-2*p.nuSt))*[1-p.nuSt p.nuSt 0;
+                        p.nuSt 1-p.nuSt 0;
+                        0 0 (1-2*p.nuSt)/2];
+                end
             else
-                C=p.ERub/(1+p.nuRub^2)*[1 p.nuRub 0;
-                    p.nuRub 1 0;
-                    0 0 (1-p.nuRub)/2];
+                if p.plain==1
+                    C=p.ERub/(1+p.nuRub^2)*[1 p.nuRub 0;
+                        p.nuRub 1 0;
+                        0 0 (1-p.nuRub)/2];
+                elseif p.plain==2
+                    C=p.ERub/((1+p.nuRub)*(1-2*p.nuRub))*[1-p.nuRub p.nuRub 0;
+                        p.nuRub 1-p.nuRub 0;
+                        0 0 (1-2*p.nuRub)/2];
+                end
             end
             p.stress{s}{e}(1:3,node)=C*p.eps{s}{e}(:,node);
             p.stress{s}{e}(4,node)=sqrt(p.stress{s}{e}(1,node)^2+p.stress{s}{e}(2,node)^2-p.stress{s}{e}(1,node)*p.stress{s}{e}(2,node)+3*p.stress{s}{e}(3,node)^2);

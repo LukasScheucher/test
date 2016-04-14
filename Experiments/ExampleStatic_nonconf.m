@@ -149,7 +149,6 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=0;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
@@ -319,6 +318,7 @@ for Case = 1:length(Params)
     [p] = FETI(Params(Case).p);
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
     disp(['Tracking: ' num2str(p.tracking)])
+    disp(['globalassembly: ' num2str(p.globalassembly)])
     convergence(1,n)=size(p.L_man,2);
     convergence(2,n)=p.tracking;
     disp('Convergence')

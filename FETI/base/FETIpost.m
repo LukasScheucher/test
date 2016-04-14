@@ -352,11 +352,16 @@ function [p]=FETIpost(p)
                 
                 %% Calculate strains
                 if p.cal_strains==1 
+                    disp('Verschiebungen')
+                    disp(us{1}{s})
                     if p.plot_int~=0
                         p.eps_int{s}=zeros(2,size(p.posn_int{p.plot_int},2));
                     end
                     [p]=strains(NodalPos0{s},us{1}{s},s,p); 
-                    disp(p.eps{s}{1})
+                    disp(['Strains of Substructure ' num2str(s)])
+                    for i=1:p.Nelx(s)*p.Nely(s)
+                        disp(p.eps{s}{i})
+                    end
                     if p.plot_int~=0
                         n=1;
                         while n<=size(p.eps_int{s},2)

@@ -357,6 +357,8 @@ disp(size(B_s))
 disp('Determinant of B_s:')
 disp(det(B_s))
 L=-inv(B_s)*B_m;
+disp('B_s invers:')
+disp(inv(B_s))
 disp('Hilfsmatrix L:')
 disp(L)
 disp(size(L))

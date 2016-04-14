@@ -933,6 +933,11 @@ if p.nonconforming==1
                             disp(['n_ma: ' num2str(n_ma)])
                             disp(['xi_a(1)+1: ' num2str(xi_a(1)+1)])
                             disp(['lm_i: ' num2str(lm_i)])
+                            
+                            % Gauss-Points:
+                            eta1=-sqrt(1/3);
+                            eta2=sqrt(1/3);  
+                            
                             for l=1:2
                                 %{
                                 disp(['l: ' num2str(l)])
@@ -956,8 +961,15 @@ if p.nonconforming==1
                                     disp(['subs2: ' num2str(subs2)])
                                     disp(['lm1: ' num2str(lag_mult(lm_i+(l-1)*2))])
                                     disp(['lm2: ' num2str(lag_mult(lm_i+1+(l-1)*2))])
-                                    p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1)=p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1)+(shapefunc(l,0,xi_a(1))*shapefunc(k,0,xi_a(1))+shapefunc(l,0,xi_b(1))*shapefunc(k,0,xi_b(1)))*J_seg;
-                                    p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1)=p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1)-(shapefunc(l,0,xi_a(1))*shapefunc(k,0,xi_a(2))+shapefunc(l,0,xi_b(1))*shapefunc(k,0,xi_b(2)))*J_seg;
+                                    
+                                    %p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1)=p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1)+(shapefunc(l,0,xi_a(1))*shapefunc(k,0,xi_a(1))+shapefunc(l,0,xi_b(1))*shapefunc(k,0,xi_b(1)))*J_seg;
+                                    %p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1)=p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1)-(shapefunc(l,0,xi_a(1))*shapefunc(k,0,xi_a(2))+shapefunc(l,0,xi_b(1))*shapefunc(k,0,xi_b(2)))*J_seg;
+                                    xig1_1=0.5*(1-eta1)*xi_a(1)+0.5*(1+eta1)*xi_b(1);
+                                    xig1_2=0.5*(1-eta2)*xi_a(1)+0.5*(1+eta2)*xi_b(1);
+                                    p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1)=p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1)+(shapefunc(l,0,xig1_1)*shapefunc(k,0,xig1_1)+shapefunc(l,0,xig1_2)*shapefunc(k,0,xig1_2))*J_seg;
+                                    xig2_1=0.5*(1-eta1)*xi_a(2)+0.5*(1+eta1)*xi_b(2);
+                                    xig2_2=0.5*(1-eta2)*xi_a(2)+0.5*(1+eta2)*xi_b(2);
+                                    p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1)=p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1)-(shapefunc(l,0,xig1_1)*shapefunc(k,0,xig2_1)+shapefunc(l,0,xig1_2)*shapefunc(k,0,xig2_2))*J_seg;
                                     p.Bs{subs1}(lag_mult(lm_i+1+(l-1)*2),p.posn_int{int}(3,n_slave)*2)=p.Bs{subs1}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_slave)*2-1);
                                     p.Bs{subs2}(lag_mult(lm_i+1+(l-1)*2),p.posn_int{int}(3,n_master)*2)=p.Bs{subs2}(lag_mult(lm_i+(l-1)*2),p.posn_int{int}(3,n_master)*2-1);
                                     
@@ -1257,6 +1269,15 @@ elseif (p.clamping == 4) % here the LEFT side of the beam is clamped
                 p.zerodofs{s}(2*j) = zeronodes{s}(j)*2;
             end
             %end
+        end
+        
+        j=1;
+        while j<=size(p.zerodofs{s},2)
+            if p.zerodofs{s}(j)==0
+                p.zerodofs{s}(j)=[];
+            else
+                j=j+1;
+            end
         end
     end
     % FULL
