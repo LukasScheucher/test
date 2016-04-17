@@ -1252,7 +1252,9 @@ elseif (p.clamping == 4) % here the LEFT side of the beam is clamped
                 for j = 1:p.Nely(s)+1
                     zeronodes{s}(j) = 1+(j-1)*(p.Nelx(s)+1);
                     p.zerodofs{s}(2*j-1) = zeronodes{s}(j)*2-1;
-                    p.zerodofs{s}(2*j) = zeronodes{s}(j)*2;
+                    if p.novertDBC~=1
+                        p.zerodofs{s}(2*j) = zeronodes{s}(j)*2;
+                    end
                 end
             end
         else
@@ -1266,7 +1268,9 @@ elseif (p.clamping == 4) % here the LEFT side of the beam is clamped
             for j = 1:p.Nely(s)+1
                 zeronodes{s}(j) = 1+(j-1)*(p.Nelx(s)+1);
                 p.zerodofs{s}(2*j-1) = zeronodes{s}(j)*2-1;
-                p.zerodofs{s}(2*j) = zeronodes{s}(j)*2;
+                if p.novertDBC~=1
+                    p.zerodofs{s}(2*j) = zeronodes{s}(j)*2;
+                end
             end
             %end
         end

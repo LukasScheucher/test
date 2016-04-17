@@ -142,9 +142,13 @@ p.mesh_method='Mortar'; % Implemented Methods:
                         % - Mortar
                         
 p.cal_stress=1;
+p.cal_strains=1;
+p.plot='disp';  
 p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
 p.addNTSLMs=0;  
 p.plot_int=1;   % Interface to plot stresses/strains
+p.novertDBC=0;
+p.plain=1;
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
@@ -212,8 +216,8 @@ p.Loadcase = 6;
 %p.Loadcase = 1;
 p.bendforce = 7000;
 p.axforce = -200;
-p.axforcefield_max = -200;
-p.axforcefield_offset = -200;
+p.axforcefield_max = -1000;
+p.axforcefield_offset = -1000;
 p.clamping = 4;
 
 

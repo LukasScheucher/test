@@ -93,7 +93,7 @@ switch p.mode
                                 y_pos=k*p.Nely(s)*p.elHeight(1)+(row-1)*p.elHeight(1);
                             end
                             %if y_pos<=p.geom_tol || abs(y_pos-p.Height)<=p.geom_tol
-                            %    p.fs{s}(2*(p.Nelx(s)+1)*row-1) = 0;
+                            %    p.fs{s}(2*(p.Nelx(s)+1)*row-1) = p.axforcefield_offset/2;
                             %else
                             p.fs{s}(2*(p.Nelx(s)+1)*row-1) = a*y_pos^2+b*y_pos+p.axforcefield_offset;
                             %end

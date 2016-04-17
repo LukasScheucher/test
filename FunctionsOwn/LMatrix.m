@@ -1,19 +1,9 @@
 function [p]=LMatrix(p)
-%{
-disp('Ndof_s:')
-disp(p.Ndof_s)
-disp(['NdofFull: ' num2str(p.NdofFull)])
-disp(['Rank B: ' num2str(rank(p.B2))])
-%}
-p.L_man=zeros(size(p.B2,2),size(p.B2,2)-rank(p.B2));%sum(p.Ndof_s),p.NdofFull-rank(p.B));
-%disp('L_man size:')
-%disp(size(p.L_man))                   
+
+p.L_man=zeros(size(p.B2,2),size(p.B2,2)-rank(p.B2));
+                  
 tol=p.geom_tol;
-%{
-disp('B2-Matrix:')
-disp(p.B2)
-disp(size(p.B2))
-%}
+
 B2_help=p.B2;
 masterdofs_subs=[];
 slavedofs=[];
@@ -57,8 +47,6 @@ for l=1:size(p.B2,1)
             n=n+1;
         end
     end
-    %disp('n_set:')
-    %disp(n_set)
     % Note conforming dofs in n_set_conf and corresponding LMs in
     % lm_conf
     if size(n_set,2)==2 && abs(abs(p.B2(l,n_set(1,1)))-abs(p.B2(l,n_set(1,2))))<=tol % condition for conforming dofs
@@ -71,11 +59,9 @@ for l=1:size(p.B2,1)
 end
 %% Search for redundant LMs
 
-disp('lm_conf:')
-disp(lm_conf)
-
 slavedofs=[1:size(B2_help,2)];
 
+% Search zero columns in B-Matrix
 m=1;
 zerocol=[];
 for n=1:size(B2_help,2)
@@ -85,43 +71,24 @@ for n=1:size(B2_help,2)
     end
 end
 
-%{
-disp('B_s:')
-disp(B_s)
-disp(size(B_s))
-disp('slavedofs:')
-disp(slavedofs)
-disp('masterdofs:')
-disp(masterdofs)
-%}
-
 masterdofs_subs=sort(masterdofs_subs);
-%disp('masterdofs_subs')
-%disp(masterdofs_subs)
+
 masterdofs=[];
 ma=1;
-%% Filling the L-matrix
+
 % Define global dofs for conforming dofs, which are part of redundant LMs
 disp('defined conforming dofs:')
 g_dof=1;
 
-%mastdofs_subs2=masterdofs_subs;
 %masterdofs_subs=[33,34,35,36,37,38,39,40];
 disp('masterdofs_subs:')
 disp(masterdofs_subs)
 disp(size(masterdofs_subs))
-masterdofs=masterdofs_subs;%(1,1:size(p.L_man,2)-size(zerocol,2));
+masterdofs=masterdofs_subs;
 
 %masterdofs=[73    74    77    78    79    80    83    84    85    86    87    88    89    90   151   152   153   154   155   156   169   170   173   174];
 slavedofs=[1:size(B2_help,2)];
 slavedofs([masterdofs,zerocol])=[]; 
-%mdof_free=[size(p.L_man,2)-size(zerocol,2)+1:size(masterdofs_subs,2)];
-%disp('mdof_free:')
-%disp(mdof_free)
-%disp('masterdofs')
-%disp(masterdofs)
-%disp(['Rang(B2_help): ' num2str(rank(B2_help))])
-%disp(['Rang(B_s): ' num2str(rank(B2_help(:,slavedofs)))])
 
 % Choose global dofs in "masterdofs"
 if rank(B2_help)>rank(B2_help(:,slavedofs))
@@ -143,8 +110,6 @@ if rank(B2_help)>rank(B2_help(:,slavedofs))
             i=i+1;
         end
     end
-    %disp('n_collision')
-    %disp(n_collision)
     disp(size(n_collision))
     disp(size(masterdofs))
     disp(size(p.L_man,2)-size(zerocol,2))
@@ -212,7 +177,7 @@ while size(lm_set,2)>rank(B2_help(:,slavedofs)) && l<=size(lm_set,2) && N_check<
                     lm_check=[lm_set(l);lm_set(lm)];    
                     B_check=B2_help(lm_check,slavedofs);    % Matrix of two equations with compare-LM and looped LM
                     if rank(B_check)<N_check    % If the rank of the Check-Matrix is lower than the number of compared equations, the equations are linear dependent and one LM is written in "lm_delete"
-                        if mdof_tolarge==1 % If there are to many masterdofs left, delete one masterdof first, before you continue with the LMs
+                        if mdof_tolarge==1      % If there are to many masterdofs left, delete one masterdof first, before you continue with the LMs
                             mdof=find(abs(B2_help(lm_set(l),:))>tol);
                             for m=1:size(mdof,2)
                                 i=find(mdof(m)==masterdofs);
@@ -293,6 +258,75 @@ while size(lm_set,2)>rank(B2_help(:,slavedofs)) && l<=size(lm_set,2) && N_check<
         N_check=N_check+1; % If all LMs are checked, do the loop again for three equations
     end
 end
+
+%% New approach for deleting redundant LMs and searching global dofs
+
+lm_delete=[];   % Vektor of redundant or zero LMs, which have to be deleted
+lm_del=1;
+lm_zero=[];
+z=1;
+lm_set=[1:size(p.B2,1)]; % Set of all LMs
+l=1;
+N_check=2;
+mdof_tolarge=0;     % "mdof_tolarge": 1="masterdofs" is to large; 2=an entry in "masterdofs" has just been deleted; 0="masterdofs" is equal to global dofs
+
+disp('Zeilenstufenform')
+ZSF_B=rref(p.B2);
+disp(ZSF_B)
+masterdofs=[];
+for l=1:size(ZSF_B,1)
+    for i=1:size(ZSF_B,2)
+        if ZSF_B(l,i)~=1 && ZSF_B(l,i)~=0
+            var=find(i==masterdofs);
+            if isempty(var)
+                masterdofs=[masterdofs,i];
+            end
+        end
+    end
+    if sum(abs(ZSF_B(l,:)))==0
+        lm_delete=[lm_delete,l];
+    end
+end
+disp('masterdofs:')
+disp(masterdofs)
+slavedofs=[1:size(B2_help,2)];
+slavedofs([masterdofs,zerocol])=[];
+ZSF_B(lm_delete,:)=[];
+B2_help=ZSF_B;
+%{
+%{
+while size(lm_set,2)>rank(p.B2) && l<=size(lm_set,2) && N_check<=6 % There are linear dependent equations in "B2_help"
+    for lm=1:size(lm_set,2)
+        if l~=lm
+            if N_check==2
+                lm_check=[lm_set(l),lm_set(lm)];
+                B_check=p.B2(lm_check,:);
+                if rank(B_check)<N_check
+                    disp(['lm_set(lm): ' num2str(lm_set(lm))])
+                    lm_delete=[lm_delete, lm_set(lm)];
+                    lm_set(lm)=[];
+                end
+            else
+                for lm3=1:size(lm_set,2)
+                    if lm3~=lm && lm3~=l
+                        lm_check=[lm_set(l),lm_set(lm),lm_set(lm3)];
+                        B_check=p.B2(lm_check,:);
+                        if rank(B_check)<N_check
+                            lm_delete=[lm_delete, lm_set(lm)];
+                            lm_set(lm)=[];
+                        end
+                    end
+                end
+            end
+        end
+    end
+    l=l+1;
+    if l>size(lm_set,2) && N_check<6
+        N_check=N_check+1;
+        l=1;
+    end
+end
+%}
 disp('masterdofs:')
 disp(masterdofs)
 disp('lm_delete:')
@@ -303,6 +337,8 @@ slavedofs([masterdofs,zerocol])=[];
 %disp(lm_delete)
 %lm_delete=[9, 10, 27, 28];
 %lm_delete=[5,6,7,8,13,14,15,16]; %NTS2x2
+
+
 disp('abs Zeilensumme B2_help:')
 rowsum=zeros(size(B2_help,1),1);
 for l=1:size(B2_help,1)
@@ -316,6 +352,12 @@ for l=1:size(B2_help,1)
     B2_help(l,:)=B2_help(l,:)/norm(B2_help(l,:));
 end
 
+disp('#############')
+disp('slavedofs:')
+disp(slavedofs)
+disp('masterdofs:')
+disp(masterdofs)
+
 disp(['globale Interface-dofs: ' num2str(size(p.L_man,2)-size(zerocol,2))])
 disp(['globale Nicht-Interface dofs: ' num2str(size(zerocol,2))])
 disp(['Rang(B2_help): ' num2str(rank(B2_help))])
@@ -325,13 +367,7 @@ disp(['Rang(B_s): ' num2str(rank(B2_help(:,slavedofs)))])
 disp(size(B2_help(:,slavedofs)))
 disp(['det(B_s): ' num2str(det(B2_help(:,slavedofs)))])
 p.L_man=zeros(size(p.B2,2),size(p.B2,2)-rank(B2_help));
-
-disp('#############')
-disp('slavedofs:')
-disp(slavedofs)
-disp('masterdofs:')
-disp(masterdofs)
-
+%}
 masterdofs_subs=masterdofs;
 disp('Beschriebene dofs:')
 for m=1:size(masterdofs_subs,2)

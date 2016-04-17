@@ -99,10 +99,13 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
                     el_x=p.x_el{s}{e}(1:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(1:2:size(p.x_el{s}{e},1));
                     el_y=p.x_el{s}{e}(2:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(2:2:size(p.x_el{s}{e},1));
                     
-                    if p.cal_stress==1
-                        color=p.stress{s}{e}(p.strain_dir,:);
-                    else
-                        color=p.eps{s}{e}(p.strain_dir,:);
+                    switch p.plot
+                        case 'disp'
+                            color=p.d_el{s}{e}(p.strain_dir:2:size(p.x_el{s}{e},1));
+                        case 'strain'
+                            color=p.eps{s}{e}(p.strain_dir,:);
+                        case 'stress'
+                            color=p.stress{s}{e}(p.strain_dir,:);
                     end
 
                     patch(el_x,el_y,color,'CDataMapping','scaled','EdgeColor','k','Marker','o','MarkerFaceColor','k');
@@ -113,11 +116,16 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
                 %set(hmesh,'FaceColor',color);
                 %set(hmesh,'LineWidth',0.5); % 1.5 for png pictures
                 colormap(jet(128));
-                if p.cal_stress==1
-                    colorbar('location','eastoutside','YLim',[p.stress_min(p.strain_dir) p.stress_max(p.strain_dir)]);
-                else
-                    colorbar('location','eastoutside','YLim',[p.strain_min(p.strain_dir) p.strain_max(p.strain_dir)]);
+                
+                switch p.plot
+                    case 'disp'
+                        colorbar('location','eastoutside','YLim',[p.dis_min(p.strain_dir) p.dis_max(p.strain_dir)]);
+                    case 'strain'
+                        colorbar('location','eastoutside','YLim',[p.strain_min(p.strain_dir) p.strain_max(p.strain_dir)]);
+                    case 'stress'
+                        colorbar('location','eastoutside','YLim',[p.stress_min(p.strain_dir) p.stress_max(p.strain_dir)]);
                 end
+                
             else
                 for r = 1:p.Nely(s) % r: row (substructure-local)
                     clear X Y Z

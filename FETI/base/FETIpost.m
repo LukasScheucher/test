@@ -392,6 +392,10 @@ function [p]=FETIpost(p)
                     end
                     hold off
                 end
+                dis_max_help=zeros(2,1);
+                p.dis_max=dis_max_help;
+                dis_min_help=zeros(2,1);
+                p.dis_min=dis_min_help;
                 
                 strain_max_help=zeros(size(p.eps{1}{1},1),1);
                 p.strain_max=strain_max_help;
@@ -400,6 +404,16 @@ function [p]=FETIpost(p)
                 
                 for s=1:p.Ns
                     for e=1:p.Nelx(s)*p.Nely(s)
+                        for j=1:2
+                            dis_max_help(j)=max(p.d_el{s}{e}(j:2:size(p.x_el{s}{e},1)));
+                            dis_min_help(j)=min(p.d_el{s}{e}(j:2:size(p.x_el{s}{e},1)));
+                            if dis_max_help(j)>p.dis_max(j)
+                                p.dis_max(j)=dis_max_help(j);
+                            end
+                            if dis_min_help(j)<p.dis_min(j)
+                                p.dis_min(j)=dis_min_help(j);
+                            end
+                        end
                         for i=1:size(strain_max_help,1)
                             strain_max_help(i)=max(p.eps{s}{e}(i,:));
                             strain_min_help(i)=min(p.eps{s}{e}(i,:));
@@ -412,6 +426,9 @@ function [p]=FETIpost(p)
                         end
                     end
                 end
+                
+                disp(p.dis_max)
+                disp(p.dis_min)
                 
                 if p.cal_stress==1
                     stress_max_help=zeros(size(p.stress{1}{1},1),1);

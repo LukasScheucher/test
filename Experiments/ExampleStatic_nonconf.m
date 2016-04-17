@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-%p.Solver = 'FULLsolver';
-p.Solver = 'FETIstaticsolverExp2';
+p.Solver = 'FULLsolver';
+%p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -155,14 +155,14 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %p.sizes = [3,1,2;
 %            1,0.5,0.5];
 %p.elcount = [2,4,2];
-%p.sizes = [6/5, 1, 4/5, 3;
-%               1,1,1,0.5]; % size of subsstructures in meters from first substructure to last; first line = length, second line = height
-%p.elcount = [5, 2, 5, 2]; % element count in y-direction for each substructure from first to last
+p.sizes = [6/5, 1, 4/5, 3;
+               1,1,1,0.5]; % size of subsstructures in meters from first substructure to last; first line = length, second line = height
+p.elcount = [5, 2, 5, 2]; % element count in y-direction for each substructure from first to last
 p.Height = 1.5; % cantilever height in meters
 p.Length = 3; % cantilever length in meters
-p.sizes = [4/3, 1, 2/3, 2, 1; % B-Matrix_assembliert.xlsx
-            1, 1, 1, 0.5, 0.5];
-p.elcount = [3, 1, 3, 1, 2];
+%p.sizes = [4/3, 1, 2/3, 2, 1; % B-Matrix_assembliert.xlsx
+%            1, 1, 1, 0.5, 0.5];
+%p.elcount = [3, 1, 3, 1, 2];
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];
@@ -317,7 +317,7 @@ n=1;
 for Case = 1:length(Params)
     [p] = FETI(Params(Case).p);
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
-    disp(['Tracking: ' num2str(p.tracking)])
+    disp(['Tracking: ' num2str(p.tracking,8)])
     disp(['globalassembly: ' num2str(p.globalassembly)])
     convergence(1,n)=size(p.L_man,2);
     convergence(2,n)=p.tracking;

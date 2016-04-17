@@ -13,6 +13,7 @@ Checklist={'mesh_method','Srd-LM';
     'addNTSLMs','0';
     'plot_int','0';
     'plain','1';
+    'novertDBC','0';
     };
 disp(size(Checklist))
 
