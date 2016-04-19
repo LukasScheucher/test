@@ -14,6 +14,8 @@ Checklist={'mesh_method','Srd-LM';
     'plot_int','0';
     'plain','1';
     'novertDBC','0';
+    'axconststress','0';
+    'plot','';
     };
 disp(size(Checklist))
 

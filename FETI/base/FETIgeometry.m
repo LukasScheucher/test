@@ -580,30 +580,39 @@ if p.nonconforming==1
                                 else
                                     m_R=m_C-1;
                                 end
-                                disp(int)
-                                disp(N_s_self(int))
-                                disp(N_int)
-                                disp(N_int-n_convert*(N_int-N_s_self(int)))
-                                disp(1+(1-n_convert)*N_s_self(int))
-                                if m_R>N_int-n_convert*(N_int-N_s_self(int)) || m_R<1+(1-n_convert)*N_s_self(int) % Slave-Node is not between outermost master nodes
+                                if m_R>N_int-n_convert*(N_int-N_s_self(int)) % Slave-Node is not between outermost master nodes
                                     if p.addNTSLMs==1
-                                        
-                                        %!!!!!Überprüfen, ob weitere
-                                        %überhängende Slave-Nodes existieren und der betrachtete Slave-Node der von diesen dem Master-Körper am nächsten liegende ist
-                                        %!!!!!
-                                        
-                                        if m_R>N_int-n_convert*(N_int-N_s_self(int)) % Slave-node is on the right side of the rightmost master-node
+                                        % Slave-node is on the right side of the rightmost master-node
+                                        if p.posn_int{int}(2,n)>p.posn_int{int}(2,m_C) && p.posn_int{int}(2,n)<p.posn_int{int}(2,m_C)+p.elHeight(p.posn_int{int}(4,m_C)) && p.posn_int{int}(2,n-1)>p.posn_int{int}(2,m_C)-p.elHeight(p.posn_int{int}(4,m_C)) && p.posn_int{int}(2,n-1)<p.posn_int{int}(2,m_C) 
+                                            disp('vertikal')
+                                            disp(['m_R ' num2str(m_R)])
                                             m_R=m_C-1;
+                                            disp(m_R)
                                             ratio=ratio/abs(p.posn_int{int}(2,m_C)-p.posn_int{int}(2,m_R));
-                                        else    % Slave-node is on the left side of leftmost master-node
-                                            m_R=m_C+1;
-                                            ratio=-ratio/abs(p.posn_int{int}(2,m_C)-p.posn_int{int}(2,m_R));
+                                        else
+                                            m_R=0;
                                         end
                                     else
                                         m_R=0;
                                     end
                                 else
-                                    ratio=ratio/abs(p.posn_int{int}(2,m_C)-p.posn_int{int}(2,m_R));
+                                    if m_R<1+(1-n_convert)*N_s_self(int)
+                                        if p.addNTSLMs==1
+                                            if p.posn_int{int}(2,n)<p.posn_int{int}(2,m_C) && p.posn_int{int}(2,n)>p.posn_int{int}(2,m_C)-p.elHeight(p.posn_int{int}(4,m_C)) && p.posn_int{int}(2,n+1)>p.posn_int{int}(2,m_C) && p.posn_int{int}(2,n+1)<p.posn_int{int}(2,m_C)+p.elHeight(p.posn_int{int}(4,m_C))
+                                                disp('vertikal')
+                                                disp(['m_R ' num2str(m_R)])
+                                                m_R=m_C+1;
+                                                disp(m_R)
+                                                ratio=-ratio/abs(p.posn_int{int}(2,m_C)-p.posn_int{int}(2,m_R));
+                                            else
+                                                m_R=0;
+                                            end
+                                        else
+                                            m_R=0;
+                                        end
+                                    else
+                                        ratio=ratio/abs(p.posn_int{int}(2,m_C)-p.posn_int{int}(2,m_R));
+                                    end
                                 end
                             else % horizontal interface
                                 if p.posn_int{int}(1,m_C)<p.posn_int{int}(1,n) % slave-node n on the right hand of master-node m_C
@@ -611,14 +620,44 @@ if p.nonconforming==1
                                 else
                                     m_R=m_C-1;
                                 end
-                                if m_R>N_int-n_convert*(N_int-N_s_self(int)) || m_R<1+(1-n_convert)*N_s_self(int) % Slave-Node is not between outermost master nodes
-                                    m_R=0;
+                                if m_R>N_int-n_convert*(N_int-N_s_self(int)) % Slave-Node is not between outermost master nodes
+                                    if p.addNTSLMs==1
+                                        % Slave-node is on the right side of the rightmost master-node
+                                        if p.posn_int{int}(1,n)>p.posn_int{int}(1,m_C) && p.posn_int{int}(1,n)<p.posn_int{int}(1,m_C)+p.elHeight(p.posn_int{int}(4,m_C)) && p.posn_int{int}(1,n-1)>p.posn_int{int}(1,m_C)-p.elHeight(p.posn_int{int}(4,m_C)) && p.posn_int{int}(1,n-1)<p.posn_int{int}(1,m_C) 
+                                            disp('horizontal')
+                                            disp(['m_R ' num2str(m_R)])
+                                            m_R=m_C-1;
+                                            disp(m_R)
+                                            ratio=ratio/abs(p.posn_int{int}(1,m_C)-p.posn_int{int}(1,m_R));
+                                        else
+                                            m_R=0;
+                                        end
+                                    else
+                                        m_R=0;
+                                    end
                                 else
-                                    ratio=ratio/abs(p.posn_int{int}(1,m_C)-p.posn_int{int}(1,m_R));
+                                    if m_R<1+(1-n_convert)*N_s_self(int)
+                                        if p.addNTSLMs==1
+                                            if p.posn_int{int}(1,n)<p.posn_int{int}(1,m_C) && p.posn_int{int}(1,n)>p.posn_int{int}(1,m_C)-p.elHeight(p.posn_int{int}(4,m_C)) && p.posn_int{int}(1,n+1)>p.posn_int{int}(1,m_C) && p.posn_int{int}(1,n+1)<p.posn_int{int}(1,m_C)+p.elHeight(p.posn_int{int}(4,m_C))
+                                                disp('horizontal')
+                                                disp(['m_R ' num2str(m_R)])
+                                                m_R=m_C+1;
+                                                disp(m_R)
+                                                ratio=-ratio/abs(p.posn_int{int}(1,m_C)-p.posn_int{int}(1,m_R));
+                                            else
+                                                m_R=0;
+                                            end
+                                        else
+                                            m_R=0;
+                                        end
+                                    else
+                                        ratio=ratio/abs(p.posn_int{int}(1,m_C)-p.posn_int{int}(1,m_R));
+                                    end
                                 end
                             end
                             
                             if m_R>0
+                                disp(['lm ' num2str(lm) ' und '  num2str(lm+1)])
                                 p.Bs{p.posn_int{int}(4,n)}(lm+1,p.posn_int{int}(3,n)*2)=-1;
                                 p.Bs{p.posn_int{int}(4,n)}(lm,p.posn_int{int}(3,n)*2-1)=-1;
                                 p.Bs{p.posn_int{int}(4,m_C)}(lm+1,p.posn_int{int}(3,m_C)*2)=1-ratio;
@@ -636,6 +675,7 @@ if p.nonconforming==1
                                 p.Nn_s_ncFull=p.Nn_s_ncFull-1;
                             end
                         else
+                            disp(['conf lm ' num2str(lm) ' und '  num2str(lm+1)])
                             p.Bs{p.posn_int{int}(4,n)}(lm+1,p.posn_int{int}(3,n)*2)=1;
                             p.Bs{p.posn_int{int}(4,n)}(lm,p.posn_int{int}(3,n)*2-1)=1;
                             p.Bs{p.posn_int{int}(4,n_conf)}(lm+1,p.posn_int{int}(3,n_conf)*2)=-1;

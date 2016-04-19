@@ -92,6 +92,7 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
             end
             %%  Plot strains and stresses
             if p.cal_strains==1
+                
                 axis equal
                 axis([xlim(1) xlim(2) ylim(1) ylim(2)]);
                 for e=1:p.Nelx(s)*p.Nely(s)
@@ -107,15 +108,16 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
                         case 'stress'
                             color=p.stress{s}{e}(p.strain_dir,:);
                     end
-
-                    patch(el_x,el_y,color,'CDataMapping','scaled','EdgeColor','k','Marker','o','MarkerFaceColor','k');
-
+                    disp(color)
+                    zz=zeros(size(el_x,1));
+                    hmesh = patch(el_x,el_y,color,'CDataMapping','scaled','EdgeColor','k','Marker','o','MarkerFaceColor','k');
+                    %set(hmesh,'FaceColor','interp',color);
                 end
                 %set(hmesh,'EdgeColor',[0 0 0]);
                 %set(hmesh,'EdgeAlpha',0.5);
-                %set(hmesh,'FaceColor',color);
+                
                 %set(hmesh,'LineWidth',0.5); % 1.5 for png pictures
-                colormap(jet(128));
+                colormap(jet(128));                
                 
                 switch p.plot
                     case 'disp'
@@ -213,6 +215,8 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
     if (NoArrows == 0)
     ArrowNr = 0;
         for s = SubsToPlot
+            disp(['Subs ' num2str(s)])
+            disp(fsPost{s})
             % plot force arrows for this substructure
             % TODO :2: should be :Ndof_n:, rest is aswell hardcoded
             % for Ndof_n = 2 and x,y displ.
@@ -225,6 +229,7 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
             end
             ArrowLength = 1.5*p.elHeight(j);
             for i = 1:2:size(fsPost{s},1)
+                disp(['i ' num2str(i)])
                 if fsPost{s}(i) == 0 && fsPost{s}(i+1) == 0
                     continue;
                 end
@@ -253,8 +258,7 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
             end
         end
     end
-    
-    
+                
     
     hold off;
 %     for ArrowNr = 1:length(myarrows)

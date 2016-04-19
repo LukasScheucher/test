@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-p.Solver = 'FULLsolver';
-%p.Solver = 'FETIstaticsolverExp2';
+%p.Solver = 'FULLsolver';
+p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -136,13 +136,12 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='Mortar'; % Implemented Methods:
+p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
-p.cal_stress=1;
 p.strain_dir=4; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
-p.addNTSLMs=0;
+p.addNTSLMs=1;
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
@@ -319,7 +318,11 @@ for Case = 1:length(Params)
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
     disp(['Tracking: ' num2str(p.tracking,8)])
     disp(['globalassembly: ' num2str(p.globalassembly)])
-    convergence(1,n)=size(p.L_man,2);
+    if p.globalassembly==1
+        convergence(1,n)=size(p.L_man,2);
+    else
+        convergence(1,n)=size(p.B2,2)-rank(p.B2);
+    end
     convergence(2,n)=p.tracking;
     disp('Convergence')
     disp(convergence)

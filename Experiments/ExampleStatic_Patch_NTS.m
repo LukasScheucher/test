@@ -9,7 +9,7 @@ p.mode = 'static';
 %% set material parameters
 % parameters for material 1 (St for steel)
 p.ESt = 200e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuSt = 0;%0.3; % Querdehnzahl / poissons ratio / [-]
+p.nuSt = 0.3; % Querdehnzahl / poissons ratio / [-]
 p.rhoSt = 7.85; % Dichte / density / [g/cm^3]
 
 % parameters for material 1 (Rub for rubber)
@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-%p.Solver = 'FULLsolver';
-p.Solver = 'FETIstaticsolverExp2';
+p.Solver = 'FULLsolver';
+%p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -140,25 +140,20 @@ p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
-%{
-p.cal_stress=1;
+                        
+p.plot='disp';  
 p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
 p.addNTSLMs=0;  
 p.plot_int=1;   % Interface to plot stresses/strains
-%}     
-p.cal_strains=1;                       
-p.cal_stress=0;
-p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
-p.addNTSLMs=0;
-p.plot_int=1;   % Interface to plot stresses/strains 
-p.plain=1;      % 1: Plain stress, 2: Plain strain
+p.novertDBC=0;
+p.axconststress=0;
+p.plain=1;
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 %p.Height = 2; % cantilever height in meters
 %p.Length = 2; % cantilever length in meters
-p.globalassembly=0;
 %p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
 %            1, 1, 1, 1];
 %p.elcount = [1, 2, 2, 3];
@@ -175,7 +170,7 @@ p.Length = 4; % cantilever length in meters
 %p.elcount = [2, 1];
 p.sizes = [2, 2; % B-Matrix_assembliert.xlsx
             2, 2];
-p.elcount = [3, 5];
+p.elcount = [5, 7];
 %p.sizes = [1, 2, 2;
 %            1, 0.5, 0.5];
 %p.elcount = [3, 1, 2];
@@ -220,8 +215,8 @@ p.Loadcase = 6;
 %p.Loadcase = 1;
 p.bendforce = 7000;
 p.axforce = -200;
-p.axforcefield_max = -200;
-p.axforcefield_offset = -200;
+p.axforcefield_max = -1000;
+p.axforcefield_offset = -1000;
 p.clamping = 4;
 
 

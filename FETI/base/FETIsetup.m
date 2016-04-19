@@ -14,7 +14,10 @@ for i=1:size(Checklist,1)
     end
 end
 
-if p.cal_stress==1
+if strcmp(p.plot,'disp') || strcmp(p.plot,'strain') || strcmp(p.plot,'stress')
+    if strcmp(p.plot,'stress')
+        p.cal_stress=1;
+    end
     p.cal_strains=1;
 end
 
