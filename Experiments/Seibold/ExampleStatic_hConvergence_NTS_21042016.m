@@ -65,8 +65,8 @@ p.tol = 1e-8;
 % the so-named function will be used as solver
 % that solver function shall be located in
 % FETI/staticsolver or FETI/dynamicsolver
-%p.Solver = 'FULLsolver';
-p.Solver = 'FETIstaticsolverExp2';
+p.Solver = 'FULLsolver';
+%p.Solver = 'FETIstaticsolverExp2';
 
 % do not call the solver
 % (e.g. if you just want eigenspectrum plots of the operator)
@@ -141,32 +141,46 @@ p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - NTS-LM
                         % - Mortar
                         
-p.plot='stress';  
-p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
-p.addNTSLMs=0;  
-p.plot_int=1;   % Interface to plot stresses/strains
-p.novertDBC=1;
-p.axconststress=1;
-p.plain=1;      % 1: plain stress; 2: plain strain
+p.plot='';      % Choose the plot, you want to see: '' - default, 'disp' - displacements, 'strain' - strains, 'stress' - stresses
+p.strain_dir=1;     % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
+p.addNTSLMs=0;      % Add additional LMs for NTS (experimental)
+p.plot_int=0;       % Interface to plot stresses/strains
+p.novertDBC=0;      % no vertical DBC (!Choose only for Clamping=4 and load in x-direction!)
+p.axconststress=0;  % For patch test: half the axial load at outer nodes due to assembly to get constant displacement field
+p.plain=1;          % 1: plain stress, 2: plain strain
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
-p.Height = 1;       % cantilever height in meters
-p.Length = 2;       % cantilever length in meters
-p.sizes = [1, 1;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
-            1, 1];
-p.elcount = [5, 7]; % element count in y-direction for each substructure from first to last
+%p.Height = 2; % cantilever height in meters
+%p.Length = 2; % cantilever length in meters
+%p.sizes = [1, 1, 1, 1;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
+%            1, 1, 1, 1];
+%p.elcount = [1, 2, 2, 3];
+%p.sizes = [3,1,2;
+%            1,0.5,0.5];
+%p.elcount = [2,4,2];
+p.sizes = [2;
+               1]; % size of subsstructures in meters from first substructure to last; first line = length, second line = height
+p.elcount = 3; % element count in y-direction for each substructure from first to last
+p.Height = 1; % cantilever height in meters
+p.Length = 2; % cantilever length in meters
+%p.sizes = [4/3, 1, 2/3, 2, 1; % B-Matrix_assembliert.xlsx
+%            1, 1, 1, 0.5, 0.5];
+%p.elcount = [3, 1, 3, 1, 2];
+%p.sizes = [1, 2, 2;
+%            1, 0.5, 0.5];
+%p.elcount = [3, 1, 2];
 
-p.elThick = 1;
+p.elThick = 0.1;    % thickness of structure in meters
 p.StaticIterations = 1; % Do not solve
 p.geom_tol = 1e-9; % Global tolerance for control of floating-point operations (e.g. geometric positioning vectors)
     
 % Parameters for conforming meshes (Srd-LM)
-p.Nely = 2; % number of elements in y-direction
+p.Nely = 3; % number of elements in y-direction
 p.Nelx = 6; % number of elements in x-direction
-p.elHeight = 0.5; % height and length of one FE element in meters
-p.Nsy = 2; % number of substructures in y direction
+p.elHeight = 0.3333333333333; % height and length of one FE element in meters
+p.Nsy = 1; % number of substructures in y direction
 p.Nsx = 1; % number of substructures in x direction
 
 % every substructure is rectangular, build out of Nely times Nelx FE elements
@@ -183,8 +197,8 @@ p.Nsx = 1; % number of substructures in x direction
 % number counting in x direction
 %
 
-p.SteelRowNrsOddNsx = [];%[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50];
-p.SteelRowNrsEvenNsx = [];%[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50];
+p.SteelRowNrsOddNsx = [];
+p.SteelRowNrsEvenNsx = [];
 
 % if ChangeForEvenNsy is set true/1, the material setting for Odd/Even is
 % switched the other way round for every row of substructures
@@ -194,13 +208,14 @@ p.ChangeForEvenNsy = 0;
 
 
 %% loading
-p.Loadcase = 6;
+p.Loadcase = 1;
 %p.Loadcase = 1;
-p.bendforce = 200;
-p.axforce = -1400;
-p.axforcefield_max = -120;
-p.axforcefield_offset = -120;
+p.bendforce = 100;
+p.axforce = 500;
+p.axforcefield_max = 1500;
+p.axforcefield_offset = -2000;
 p.clamping = 4;
+%p.clamping = 4;
 
 
 
@@ -256,7 +271,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:1
+for z=1:8
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
@@ -278,7 +293,7 @@ for z=1:1
         Params(CaseNr).p.Height = p.Height;
         Params(CaseNr).p.Length = p.Length;
         Params(CaseNr).p.sizes = p.sizes;
-        Params(CaseNr).p.elcount = p.elcount.*z;
+        Params(CaseNr).p.elcount = p.elcount;
     end
     Params(CaseNr).p.CaseRuns = z;
     Params(CaseNr).p.NoPattern = 0;
@@ -300,29 +315,29 @@ end
 % start calculation
 % parpool(min(length(Params)));
 convergence=zeros(2,length(Params));
-iterations=convergence;
 disp('Convergence')
 disp(convergence)
 n=1;
-
-addpaths;
-
 for Case = 1:length(Params)
     [p] = FETI(Params(Case).p);
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
-    disp(['Tracking: ' num2str(p.tracking)])
-    convergence(1,n)=size(p.B,2);
+    disp(['Tracking: ' num2str(p.tracking,8)])
+    disp(['globalassembly: ' num2str(p.globalassembly)])
+    if p.globalassembly==1
+        convergence(1,n)=size(p.L_man,2);
+    else
+        convergence(1,n)=size(p.B2,2)-rank(p.B2);
+    end
     convergence(2,n)=p.tracking;
-    iterations(1,n)=convergence(1,n);
-    iterations(2,n)=p.PlotIterations;
     disp('Convergence')
     disp(convergence)
+    disp(['Nlm: ' num2str(p.Nlm)])
     n=n+1;
 end
 
 figure(10)
-plot(convergence(1,:),convergence(2,:))
-figure(11)
-plot(iterations(1,:),iterations(2,:))
-
+hold on
+plot(convergence(1,1:end-1),convergence(2,1:end-1))
+plot(convergence(1,end),convergence(2,end),'*r')
+hold off
 %close all;

@@ -141,13 +141,13 @@ p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - NTS-LM
                         % - Mortar
                         
-p.plot='stress';  
-p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
-p.addNTSLMs=0;  
-p.plot_int=1;   % Interface to plot stresses/strains
-p.novertDBC=1;
-p.axconststress=1;
-p.plain=1;      % 1: plain stress; 2: plain strain
+p.plot='disp';      % Choose the plot, you want to see: '' - default, 'disp' - displacements, 'strain' - strains, 'stress' - stresses
+p.strain_dir=1;     % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
+p.addNTSLMs=0;      % Add additional LMs for NTS (experimental)
+p.plot_int=1;       % Interface to plot stresses/strains
+p.novertDBC=1;      % no vertical DBC (!Choose only for Clamping=4 and load in x-direction!)
+p.axconststress=1;  % For patch test: half the axial load at outer nodes due to assembly to get constant displacement field
+p.plain=1;          % 1: plain stress, 2: plain strain
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure

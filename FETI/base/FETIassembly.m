@@ -589,7 +589,6 @@ assert(size(p.f,1)==p.Ndof,['Size of vector p.f is wrong! (size is ' num2str(siz
 if p.globalassembly==1
     Full.f2=p.L_man\p.f;
     Full.f=Full.f2;
-
     %disp('Full.f:')
     %disp(Full.f)
 end

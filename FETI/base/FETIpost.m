@@ -461,19 +461,14 @@ function [p]=FETIpost(p)
             for s = 1:p.Ns
                 dofEnd = sum(p.Ndof_s(1:s));
                 dofStart = dofEnd - p.Ndof_s(s) + 1;
-                if strcmp(p.Solver,'FULLsolver')==0
-                    fsPost{s} = p.L{s}'*p.fs{s}(:,1);
-                end
+                fsPost{s} = p.L{s}'*p.fs{s}(:,1);
 
-                %if p.nonconforming==1
-                %    PlotMargin=p.sizes(2,s)/p.Nely(s);
-                %else
                 if p.nonconforming==1
                     PlotMargin=p.elHeight(s);
                 else
                     PlotMargin=p.elHeight;
                 end
-                %end
+
                 for i = p.StaticPlots
                     fAll{s} = fsPost{s} + flms{i}{s};
                     NodalPosMult{i}{s} = NodalPos0{s} + us{i}{s};
@@ -506,7 +501,7 @@ function [p]=FETIpost(p)
                     figure(FigH);
                     set(FigH,'units','normalized','outerposition',[0 0 1 1]);
                     hold on;
-                    axis on;
+                    axis off;
                     SubsToPlot = 1:p.Ns;
                     %FETIplot( p, FigH, NodalPosMult{iPlot}, SubsToPlot, fsPost, PlotDescription, xlim, ylim);
                     FETIplot( p, FigH, NodalPosMult{iPlot}, SubsToPlot, fAll, PlotDescription, xlim, ylim);

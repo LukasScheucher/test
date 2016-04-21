@@ -93,8 +93,8 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
             %%  Plot strains and stresses
             if p.cal_strains==1
                 
-                axis equal
-                axis([xlim(1) xlim(2) ylim(1) ylim(2)]);
+                %axis equal
+                %axis([xlim(1) xlim(2) ylim(1) ylim(2)]);
                 for e=1:p.Nelx(s)*p.Nely(s)
                     
                     el_x=p.x_el{s}{e}(1:2:size(p.x_el{s}{e},1))+p.d_el{s}{e}(1:2:size(p.x_el{s}{e},1));
@@ -110,7 +110,7 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
                     end
                     disp(color)
                     zz=zeros(size(el_x,1));
-                    hmesh = patch(el_x,el_y,color,'CDataMapping','scaled','EdgeColor','k','Marker','o','MarkerFaceColor','k');
+                    hmesh = patch(el_x,el_y,color,'CDataMapping','scaled');%,'EdgeColor','k','Marker','o','MarkerFaceColor','k');
                     %set(hmesh,'FaceColor','interp',color);
                 end
                 %set(hmesh,'EdgeColor',[0 0 0]);

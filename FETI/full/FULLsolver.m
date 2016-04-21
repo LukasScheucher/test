@@ -37,7 +37,7 @@ function p = FULLsolver(p)%Full, Integration, Geometry)
 
             % right hand side
             rhsFull = p.Full.f(:,n+1) - p.Full.C*uFullAstP(:,n+1) - p.Full.K*uFullAst(:,n+1);
-
+            
             % solve
             uFullPP(:,n+1) = UDfull\(LDfull\(rhsFull(pDfull,:)));
 
@@ -49,7 +49,7 @@ function p = FULLsolver(p)%Full, Integration, Geometry)
     else
             % right hand side
             rhsFull = p.Full.f;
-            
+            disp(size(p.Full.f))
             % solve
             p.uFull = UDfull\(LDfull\(rhsFull(pDfull,:)));
     end
