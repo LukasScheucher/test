@@ -1,9 +1,4 @@
 function [p] = FETI(p)
-control = isfield(p,'nonconforming');
-if control~=1 % Set 'nonconforming' variable to zero, if an older Example-file is used
-    p.nonconforming=0; % => Use of conforming mesh
-end
-
 display(char(13));
 display('-------------------------------------------------------------------');
 display(['Case ' num2str(p.Case) ': ' p.description]);

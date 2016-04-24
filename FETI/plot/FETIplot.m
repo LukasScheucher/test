@@ -211,8 +211,7 @@ function FETIplot( p, FigureHandle, NodalPos, SubsToPlot, fsPost, description, x
     set(gca,'XLim',xlim);
     set(gca,'YLim',ylim);
     
-    NoArrows = 0;
-    if (NoArrows == 0)
+    if (p.NoArrows == 0)
     ArrowNr = 0;
         for s = SubsToPlot
             disp(['Subs ' num2str(s)])
