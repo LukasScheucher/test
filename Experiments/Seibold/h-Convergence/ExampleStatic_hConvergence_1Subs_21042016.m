@@ -251,7 +251,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:7
+for z=1:8
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;

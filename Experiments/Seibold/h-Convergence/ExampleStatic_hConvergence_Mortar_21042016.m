@@ -136,7 +136,7 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='NTS-LM'; % Implemented Methods:
+p.mesh_method='Mortar'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
@@ -312,6 +312,7 @@ for Case = 1:length(Params)
     iterations(2,n)=p.PlotIterations;
     disp('Convergence')
     disp(convergence)
+    disp(rank(p.B2))
     n=n+1;
 end
 
