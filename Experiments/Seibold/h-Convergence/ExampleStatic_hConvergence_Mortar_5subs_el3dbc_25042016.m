@@ -149,9 +149,9 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 p.Height = 1;       % cantilever height in meters
 p.Length = 10;       % cantilever length in meters
-p.sizes = [5, 5;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
-            1, 1];
-p.elcount = [2, 3]; % element count in y-direction for each substructure from first to last
+p.sizes = [2, 2, 2, 2, 2;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
+            1, 1, 1, 1, 1];
+p.elcount = [3, 2, 3, 2, 3]; % element count in y-direction for each substructure from first to last
 
 p.elThick = 1;
 p.StaticIterations = 1; % Do not solve
