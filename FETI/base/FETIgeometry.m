@@ -72,8 +72,6 @@ if p.nonconforming==1
     end
     disp('p.poss mit oberster und unterster Reihe:')
     disp(p.poss)
-    disp(p.right_side)
-    disp(inv_counter)
     k=1;
     for i =p.right_side(1)+1:inv_counter-1 % Build rest of substructures from left to right and from bottom to top
         if p.poss(1,i)==0 && p.poss(2,i)==0 && i~=1
@@ -136,14 +134,14 @@ if p.nonconforming==1
     p.Nn_s_nc=p.elHeight; % Number of nodes in one substructure
     p.Nn_s_ncFull=0;
     for s=1:p.Ns
+        disp('......')
         p.elHeight(s)=p.sizes(2,s)/p.Nely(s);
         p.Nelx(s)=int32(p.sizes(1,s)/(p.sizes(2,s)/p.Nely(s)));
         if abs(p.Nelx(s)-p.sizes(1,s)/p.elHeight(s))<=tol % Check, if element-size matches the susbtructure's x-length
             p.Nn_s_nc(s)=(p.Nelx(s)+1)*(p.Nely(s)+1); % numer of nodes in each substructure for quadratic elements
             p.Nn_s_ncFull=p.Nn_s_ncFull+p.Nn_s_nc(s);
         else
-            disp(['Substructure ' num2str(i) 's element-size does not match its length. Process canceled!'])
-            break
+            error(['Substructure ' num2str(s) 's element-size does not match its length. Process canceled!'])
         end 
     end
     disp('p.sizes(2): ') 
@@ -185,6 +183,7 @@ if p.nonconforming==1
                 end
                 disp(['Interface Length: ' num2str(int_length)])
                 disp(ceil(int_length/p.elHeight(s)))
+                disp(p.elHeight(s))
                 if p.elHeight(s)<p.elHeight(z) % definition of master(1), slave(2), conforming interface (3) and cross connection (4)
                     p.int(4,int)=2;
                     p.Nlm=p.Nlm+int32(ceil(int_length/p.elHeight(s)))+1;%+p.Nely(s)+1;
@@ -1020,19 +1019,6 @@ if p.nonconforming==1
                                 end
                                 %lm=lm+2;
                             end
-                            %{
-                            if n<size(active_set,2)-1
-                                lm=lm-2;
-                            end
-                            %}
-                            disp('--------')
-                            %{
-                            if active_set(1,n+1)==active_set(2,n+1)
-                                lm=lag_mult(lm_i);
-                            else
-                                lm=lag_mult(lm_i+1+(l-1)*2)+1;
-                            end
-                            %}
                         end
                     end
                     slave_substructures(1,int)=subs1;
