@@ -239,10 +239,6 @@ end
 p.B = horMatrix(p.Bs,p.Nlm,p.Ndof);
 p.B2=p.B;
 
-disp('row-sums of global B-Matrix:')
-for i=1:size(p.B,1)
-    disp(sum(p.B(i,:)))
-end
 %{
 for l=1:size(p.B2,1)
     if sum(abs(p.B2(l,:)))>tol
@@ -280,29 +276,7 @@ if p.globalassembly==1
     disp('L manuell:')
 
     [p] = LMatrix(p);
-    %{
-    p.L_man=zeros(20,16);
-    p.L_man(1,1)=1;
-    p.L_man(2,2)=1;
-    p.L_man(3,3)=1;
-    p.L_man(4,4)=1;
-    p.L_man(9,3)=1;
-    p.L_man(10,4)=1;
-    p.L_man(11,5)=1;
-    p.L_man(12,6)=1;
-    p.L_man(13,7)=1;
-    p.L_man(14,8)=1;
-    p.L_man(5,9)=1;
-    p.L_man(6,10)=1;
-    p.L_man(7,11)=1;
-    p.L_man(15,11)=1;
-    p.L_man(8,12)=1;
-    p.L_man(16,12)=1;
-    p.L_man(17,13)=1;
-    p.L_man(18,14)=1;
-    p.L_man(19,15)=1;
-    p.L_man(20,16)=1;
-    %}
+
     disp(p.L_man)
     disp(size(p.L_man))
     %disp('B*L:')
@@ -327,50 +301,9 @@ if p.globalassembly==1
     Full.K2=p.L_man'*p.K*p.L_man;
     Full.M2=p.L_man'*p.M*p.L_man;
 
-    %disp('Full K:')
-    %disp(size(Full.K2))
-
     if p.nonconforming~=1
         Full.K=full(Full.K);
         Full.M=full(Full.M);
-        %disp(Full.K)
-
-        compare_ind=zeros(2,size(Full.M,2)); % Compare diagonal entries
-        compare=zeros(2,size(Full.M,2));
-        set_l=1:size(Full.M2,2);
-        for i=1:size(Full.M,2)
-            k=1;
-            compare_ind(1,i)=i;
-            compare(1,i)=Full.M(i,i);
-            compare(2,i)=Full.M2(i,i);
-            while k<=size(set_l,2)
-                l=set_l(k);
-                if abs(Full.M(i,i)-Full.M2(l,l))<=tol
-                    compare_ind(2,i)=l;
-                    set_l(k)=[];
-                    %k=0;
-                    break
-                end
-                k=k+1;
-            end
-        end
-        %{
-        disp('L_man:')
-        disp(p.L_man)
-        disp('L_man^T:')
-        disp(p.L_man')
-        disp('Full.K:')
-        disp(Full.K)
-        disp(sum(sum(Full.K(:))))
-        disp('Full.K2:')
-        disp(Full.K2)
-        disp(sum(sum(Full.K2(:))))
-
-        disp('Campare Matrix Indices:')
-        disp(compare_ind)
-        disp('Campare Matrix:')
-        disp(compare)
-        %}
     end
     Full.K=Full.K2;
     Full.K=sparse(Full.K);

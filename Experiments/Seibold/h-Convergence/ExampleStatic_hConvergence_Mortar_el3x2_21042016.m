@@ -9,7 +9,7 @@ p.mode = 'static';
 %% set material parameters
 % parameters for material 1 (St for steel)
 p.ESt = 200e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuSt = 0.3; % Querdehnzahl / poissons ratio / [-]
+p.nuSt = 0;%0.3; % Querdehnzahl / poissons ratio / [-]
 p.rhoSt = 7.85; % Dichte / density / [g/cm^3]
 
 % parameters for material 1 (Rub for rubber)
@@ -147,13 +147,13 @@ p.plain=1;          % 1: plain stress, 2: plain strain
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
-p.Height = 1;       % cantilever height in meters
-p.Length = 10;       % cantilever length in meters
-p.sizes = [5, 5;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
-            1, 1];
-p.elcount = [3, 2]; % element count in y-direction for each substructure from first to last
+p.Height = 1.2;       % cantilever height in meters
+p.Length = 12;       % cantilever length in meters
+p.sizes = [6 6;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
+            1.2 1.2];
+p.elcount = [3 2]; % element count in y-direction for each substructure from first to last
 
-p.elThick = 1;
+p.elThick = 1.2;
 p.StaticIterations = 1; % Do not solve
 p.geom_tol = 1e-9; % Global tolerance for control of floating-point operations (e.g. geometric positioning vectors)
     
@@ -296,6 +296,7 @@ end
 % parpool(min(length(Params)));
 convergence=zeros(2,length(Params));
 iterations=convergence;
+cal_time=zeros(1,length(Params));
 disp('Convergence')
 disp(convergence)
 n=1;
@@ -303,16 +304,17 @@ n=1;
 addpaths;
 
 for Case = 1:length(Params)
+    tic;
     [p] = FETI(Params(Case).p);
+    cal_time(n) = toc;
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
     disp(['Tracking: ' num2str(p.tracking)])
-    convergence(1,n)=size(p.B2,2)-rank(p.B2);
+    convergence(1,n)=size(p.B,2);
     convergence(2,n)=p.tracking;
     iterations(1,n)=convergence(1,n);
     iterations(2,n)=p.PlotIterations;
     disp('Convergence')
     disp(convergence)
-    disp(rank(p.B2))
     n=n+1;
 end
 
@@ -320,5 +322,8 @@ figure(10)
 plot(convergence(1,:),convergence(2,:))
 figure(11)
 plot(iterations(1,:),iterations(2,:))
+disp(cal_time)
+figure(12)
+plot(convergence(1,:),cal_time)
 
 %close all;

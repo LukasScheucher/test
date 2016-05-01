@@ -9,7 +9,7 @@ p.mode = 'static';
 %% set material parameters
 % parameters for material 1 (St for steel)
 p.ESt = 200e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuSt = 0.3; % Querdehnzahl / poissons ratio / [-]
+p.nuSt = 0;%0.3; % Querdehnzahl / poissons ratio / [-]
 p.rhoSt = 7.85; % Dichte / density / [g/cm^3]
 
 % parameters for material 1 (Rub for rubber)
@@ -136,37 +136,30 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='NTS-LM'; % Implemented Methods:
+p.mesh_method='Mortar'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
                         
-p.plot='stress';  
-p.strain_dir=1; % Direction of strain: 1: epsilon_11, 2: epsilon_22, 3: epsilon_12, 4: von Mises stress (use only for stresses)
-p.addNTSLMs=0;  
-p.plot_int=0;   % Interface to plot stresses/strains
-p.novertDBC=0;
-p.axconststress=0;
-p.plain=1;
+p.plot='stress';      % Choose the plot, you want to see: '' - default, 'disp' - displacements, 'strain' - strains, 'stress' - stresses
+p.plain=1;          % 1: plain stress, 2: plain strain
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
-p.Height = 2; % cantilever height in meters
-p.Length = 4; % cantilever length in meters
-p.sizes = [2, 2;     % B-Matrix Notizenbeispiel_NTS2x2.xlsx
-            2, 2];
-p.elcount = [5, 7];
+p.Height = 1.2;       % cantilever height in meters
+p.Length = 12;       % cantilever length in meters
+p.sizes = [6 6;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
+            1.2 1.2];
+p.elcount = [2 3]; % element count in y-direction for each substructure from first to last
 
-
-p.elThick = 0.1;
+p.elThick = 1.2;
 p.StaticIterations = 1; % Do not solve
 p.geom_tol = 1e-9; % Global tolerance for control of floating-point operations (e.g. geometric positioning vectors)
     
 % Parameters for conforming meshes (Srd-LM)
 p.Nely = 2; % number of elements in y-direction
 p.Nelx = 6; % number of elements in x-direction
-p.elThick = 0.1; % thickness of structure in meters
 p.elHeight = 0.5; % height and length of one FE element in meters
 p.Nsy = 2; % number of substructures in y direction
 p.Nsx = 1; % number of substructures in x direction
@@ -185,8 +178,8 @@ p.Nsx = 1; % number of substructures in x direction
 % number counting in x direction
 %
 
-p.SteelRowNrsOddNsx = [];
-p.SteelRowNrsEvenNsx = [];
+p.SteelRowNrsOddNsx = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50];
+p.SteelRowNrsEvenNsx = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50];
 
 % if ChangeForEvenNsy is set true/1, the material setting for Odd/Even is
 % switched the other way round for every row of substructures
@@ -196,14 +189,13 @@ p.ChangeForEvenNsy = 0;
 
 
 %% loading
-p.Loadcase = 6;
+p.Loadcase = 7;
 %p.Loadcase = 1;
-p.bendforce = 100;
-p.axforce = 500;
-p.axforcefield_max = -200;
-p.axforcefield_offset = -200;
+p.bendforce = 2000;
+p.axforce = -1400;
+p.axforcefield_max = -120;
+p.axforcefield_offset = -120;
 p.clamping = 4;
-%p.clamping = 4;
 
 
 
@@ -259,7 +251,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=1:1
+for z=1:8
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
@@ -281,7 +273,7 @@ for z=1:1
         Params(CaseNr).p.Height = p.Height;
         Params(CaseNr).p.Length = p.Length;
         Params(CaseNr).p.sizes = p.sizes;
-        Params(CaseNr).p.elcount = p.elcount;
+        Params(CaseNr).p.elcount = p.elcount.*z;
     end
     Params(CaseNr).p.CaseRuns = z;
     Params(CaseNr).p.NoPattern = 0;
@@ -303,29 +295,35 @@ end
 % start calculation
 % parpool(min(length(Params)));
 convergence=zeros(2,length(Params));
+iterations=convergence;
+cal_time=zeros(1,length(Params));
 disp('Convergence')
 disp(convergence)
 n=1;
+
+addpaths;
+
 for Case = 1:length(Params)
+    tic;
     [p] = FETI(Params(Case).p);
+    cal_time(n) = toc;
     disp(['p.nonconforming: ' num2str(p.nonconforming)])
-    disp(['Tracking: ' num2str(p.tracking,8)])
-    disp(['globalassembly: ' num2str(p.globalassembly)])
-    if p.globalassembly==1
-        convergence(1,n)=size(p.L_man,2);
-    else
-        convergence(1,n)=size(p.B2,2)-rank(p.B2);
-    end
+    disp(['Tracking: ' num2str(p.tracking)])
+    convergence(1,n)=size(p.B,2);
     convergence(2,n)=p.tracking;
+    iterations(1,n)=convergence(1,n);
+    iterations(2,n)=p.PlotIterations;
     disp('Convergence')
     disp(convergence)
-    disp(['Nlm: ' num2str(p.Nlm)])
     n=n+1;
 end
 
 figure(10)
-hold on
-plot(convergence(1,1:end-1),convergence(2,1:end-1))
-plot(convergence(1,end),convergence(2,end),'*r')
-hold off
+plot(convergence(1,:),convergence(2,:))
+figure(11)
+plot(iterations(1,:),iterations(2,:))
+disp(cal_time)
+figure(12)
+plot(convergence(1,:),cal_time)
+
 %close all;
