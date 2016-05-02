@@ -40,7 +40,7 @@ while (true)
     z(:,k+1) = FIPre*r(:,k+1);
     w(:,k+1) = FETIpN(z(:,k+1),0,p);
     
-    for j = k%1:k % full orthogonalization
+    for j = 1:k%1:k % full orthogonalization
         w(:,k+1) = w(:,k+1) - ( (q(:,j)'*w(:,k+1) )/( q(:,j)'*w(:,j) )).*w(:,j);
     end
     
@@ -65,7 +65,7 @@ while (true)
     realRes(k) = norm( d - FI*lambdafull(:,k) - GI*alpha(:,k) );
     
     %display(['norm(r(' num2str(k) '))/norm(r(' num2str(1) ')) = ' num2str(norm(r(:,k))/norm(r(:,1)))]);
-    if (res(k) < tol)
+    if k==31%(res(k) < tol)
         break;
     elseif k == max_iteration*Nlm
         disp('Max. number of iterations reached!')

@@ -1,5 +1,5 @@
 function y = FETIpN(x,transpose,p)
-    if p.Coarse == 3 || p.Coarse == 4
+    if p.Coarse == 3 || p.Coarse == 4 || isempty(p.GI)
         y = x;
         return;
     end
