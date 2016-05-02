@@ -136,13 +136,17 @@ switch p.mode
                     end
                     s=ceil(p.Nsy/2)*p.Nsx;
                     disp(s)
+                    disp(p.Nsy)
+                    disp(p.Nely)
+                    disp(p.elHeight)
                     posy=floor(p.Nsy/2)*p.Nely(1)*p.elHeight;
                     disp(posy)
-                    row1=floor((p.Height/2-posy)/p.elHeight)+1;
-                    disp(row1)
+                    disp(p.Height)
+                    forcepos=p.Height/2+p.forceoffset;
+                    row1=floor((forcepos-posy)/p.elHeight)+1;
                     if p.Nely>=row1
                         row2=row1+1;
-                        ratio=abs(1-((p.Height/2-posy)-(row1-1)*p.elHeight)/p.elHeight);
+                        ratio=abs(1-((forcepos-posy)-(row1-1)*p.elHeight)/p.elHeight);
                         disp(['ratio: ' num2str(ratio)])
                         p.fs{s}(2*(p.Nelx+1)*row1)=-p.bendforce*ratio;
                         p.fs{s}(2*(p.Nelx+1)*row2)=-p.bendforce*(1-ratio);
