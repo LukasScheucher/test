@@ -9,7 +9,7 @@ p.mode = 'static';
 %% set material parameters
 % parameters for material 1 (St for steel)
 p.ESt = 200e6; % E-Modul / Young's modulus / [kN/m^2]
-p.nuSt = 0;%0.3; % Querdehnzahl / poissons ratio / [-]
+p.nuSt = 0; %0.3; % Querdehnzahl / poissons ratio / [-]
 p.rhoSt = 7.85; % Dichte / density / [g/cm^3]
 
 % parameters for material 1 (Rub for rubber)
@@ -39,7 +39,7 @@ p.GeneoModes = [1 2 3];
 % options: 'SchurK' (like k-scaling, using the schur-complement of K instead of K)
 % options: 'D'      (only for dynamic, like k-scaling, using D instead of K)
 % options: 'SchurD' (only for dynamic, like k-scaling, using the schur-complement of D instead of K)
-p.Scaling = 'K';
+p.Scaling = 'multi'; %'K'
 
 % if true/1: do matrix computations substructure by substructure
 % does not mean parallelization in time
@@ -56,7 +56,7 @@ p.Preconditioner = 'K';
 % select the matrix Q
 % options: 'eye'  (set Q to identity)
 % options: 'pre'  (use the preconditioner as Q)
-p.SwitchQ = 'pre'; % eye or pre
+p.SwitchQ = 'eye';%'pre' % eye or pre
 
 % choose tolerance (stopping criterion for CG iterations: res < tol)
 p.tol = 1e-8;
@@ -143,6 +143,7 @@ p.mesh_method='Srd-LM'; % Implemented Methods:
                         
 p.plot='stress';      % Choose the plot, you want to see: '' - default, 'disp' - displacements, 'strain' - strains, 'stress' - stresses
 p.plain=1;          % 1: plain stress, 2: plain strain
+p.noBCatInterfaces=1;
 
 p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 %% geometry of the structure
@@ -195,6 +196,7 @@ p.bendforce = 2000;
 p.axforce = -1400;
 p.axforcefield_max = -120;
 p.axforcefield_offset = -120;
+p.forceoffset=0.1; % Offset of load from neutral line at load case 7
 p.clamping = 4;
 
 
@@ -251,7 +253,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=4:4
+for z=1:1
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
