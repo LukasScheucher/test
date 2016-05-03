@@ -17,6 +17,7 @@ Checklist={'mesh_method','Srd-LM';
     'axconststress','0';
     'plot','';
     'NoArrows','0';
+    'forceoffset','0';
     };
 disp(size(Checklist))
 

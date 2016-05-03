@@ -136,7 +136,7 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='Mortar'; % Implemented Methods:
+p.mesh_method='NTS-LM'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
@@ -149,9 +149,9 @@ p.max_iteration=5; % stop solver, if iteration counter = p.max_iteration*Nlm
 % Parameters for nonconforming meshes (Note: Choose a suitable method with p.mesh_method)
 p.Height = 1;       % cantilever height in meters
 p.Length = 12;       % cantilever length in meters
-p.sizes = [6 6 6 6;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
-            0.5 0.5 0.5 0.5];
-p.elcount = [3 2 3 2]; % element count in y-direction for each substructure from first to last
+p.sizes = [3 3 3 3 3 3 3 3;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
+            0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5];
+p.elcount = [3 3 2 2 3 3 2 2]; % element count in y-direction for each substructure from first to last
 
 p.elThick = 1;
 p.StaticIterations = 1; % Do not solve

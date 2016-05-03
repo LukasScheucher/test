@@ -39,7 +39,7 @@ p.GeneoModes = [1 2 3];
 % options: 'SchurK' (like k-scaling, using the schur-complement of K instead of K)
 % options: 'D'      (only for dynamic, like k-scaling, using D instead of K)
 % options: 'SchurD' (only for dynamic, like k-scaling, using the schur-complement of D instead of K)
-p.Scaling = 'multi'; %'K'
+p.Scaling = 'K';%'multi'; 
 
 % if true/1: do matrix computations substructure by substructure
 % does not mean parallelization in time
@@ -56,10 +56,10 @@ p.Preconditioner = 'K';
 % select the matrix Q
 % options: 'eye'  (set Q to identity)
 % options: 'pre'  (use the preconditioner as Q)
-p.SwitchQ = 'eye';%'pre' % eye or pre
+p.SwitchQ = 'pre'; % eye or pre
 
 % choose tolerance (stopping criterion for CG iterations: res < tol)
-p.tol = 1e-8;
+p.tol = 1e-7;
 
 % select the solver
 % the so-named function will be used as solver

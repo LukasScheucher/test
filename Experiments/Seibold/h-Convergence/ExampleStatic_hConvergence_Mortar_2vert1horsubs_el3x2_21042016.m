@@ -59,7 +59,7 @@ p.Preconditioner = 'K';
 p.SwitchQ = 'pre'; % eye or pre
 
 % choose tolerance (stopping criterion for CG iterations: res < tol)
-p.tol = 1e-8;
+p.tol = 1e-7;
 
 % select the solver
 % the so-named function will be used as solver
@@ -136,7 +136,7 @@ p.DisplayEigen = 0;
 p.DisplayDamping = 0;
 
 % note,whether the mesh is nonconforming (0=no, 1=yes)
-p.mesh_method='Srd-LM'; % Implemented Methods:
+p.mesh_method='Mortar'; % Implemented Methods:
                         % - Srd-LM (Conforming meshes)
                         % - NTS-LM
                         % - Mortar
@@ -151,7 +151,7 @@ p.Height = 1;       % cantilever height in meters
 p.Length = 12;       % cantilever length in meters
 p.sizes = [12 12;    % size of subsstructures in meters from first substructure to last; first line = length, second line = height
             0.5 0.5];
-p.elcount = [2 2]; % element count in y-direction for each substructure from first to last
+p.elcount = [3 2]; % element count in y-direction for each substructure from first to last
 
 p.elThick = 1;
 p.StaticIterations = 1; % Do not solve
@@ -251,7 +251,7 @@ CaseNr = 0;
 p.Nely0=p.Nely;
 p.Nelx0=p.Nelx;
 p.elHeight0=p.elHeight;
-for z=4:4
+for z=1:
     CaseNr = CaseNr + 1;
     % case 1:
     Params(CaseNr).p = p;
